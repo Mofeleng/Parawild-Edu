@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Merriweather } from "@next/font/google"
 import "./globals.css";
+import Navbar from "@/components/navbar";
 
 const merriweather = Merriweather({
   weight: ["300", "400", "700", "900"],
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body
         className={`${merriweather.className} antialiased`}
       >
+        <Navbar />
         {children}
       </body>
     </html>
