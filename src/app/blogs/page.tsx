@@ -7,6 +7,7 @@ import { GraphQLClient, gql } from "graphql-request";
 import PageLoader from "@/components/page-loader";
 import FetchError from "@/components/fetch-error";
 import BlogCardPreview from "@/components/blog-card-preview";
+import BlogPreview from "@/components/blog-preview";
 
 export default function Blog() {
     const [data, setData] = useState<any>([]);
@@ -109,19 +110,16 @@ export default function Blog() {
             and the natural world. Join us as we explore the fascinating realm of wildlife.
           </p>
 
-          {/* Featured Posts Section */}
           <h2 className="text-2xl font-semibold text-white mb-4">
             Featured Posts
           </h2>
           <hr className="border-white/20 mb-8" />
-
-          {/* Featured Posts Grid */}
           <div className="grid md:grid-cols-2 gap-8 text-left">
-            {/* Featured Post 1 */}
             {featuredPosts.map((featuredPost:any) => {
                 return <BlogCardPreview key={featuredPost.id} post={featuredPost} />;
             })}
           </div>
+
         </div>
       </div>
     </section>
@@ -129,175 +127,9 @@ export default function Blog() {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-white mb-8">Latest Posts</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          
-          {/* Blog Post 1 */}
-          <article className="bg-white/5 rounded-lg overflow-hidden">
-            <div className="relative h-48">
-              <Image
-                src="/blog-1.jpg"
-                alt="Wildlife tracking techniques"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <div className="text-sm text-gray-300 mb-2">Wildlife Management</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Essential Wildlife Tracking Techniques
-              </h3>
-              <p className="text-gray-300 mb-4">
-                Learn about the fundamental tracking methods used by wildlife experts in the field...
-              </p>
-              <Button
-                variant="link"
-                className="text-white hover:text-gray-300 transition-colors"
-                aria-label="Read more about wildlife tracking techniques"
-              >
-                Read More →
-              </Button>
-            </div>
-          </article>
-
-          {/* Blog Post 2 */}
-          <article className="bg-white/5 rounded-lg overflow-hidden">
-            <div className="relative h-48">
-              <Image
-                src="/blog-2.jpg"
-                alt="Conservation challenges"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <div className="text-sm text-gray-300 mb-2">Conservation</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Current Challenges in Wildlife Conservation
-              </h3>
-              <p className="text-gray-300 mb-4">
-                Exploring the major obstacles facing wildlife conservation efforts today...
-              </p>
-              <Button
-                variant="link"
-                className="text-white hover:text-gray-300 transition-colors"
-                aria-label="Read more about conservation challenges"
-              >
-                Read More →
-              </Button>
-            </div>
-          </article>
-
-          {/* Blog Post 3 */}
-          <article className="bg-white/5 rounded-lg overflow-hidden">
-            <div className="relative h-48">
-              <Image
-                src="/blog-3.jpg"
-                alt="Wildlife photography tips"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <div className="text-sm text-gray-300 mb-2">Photography</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Wildlife Photography: Tips and Techniques
-              </h3>
-              <p className="text-gray-300 mb-4">
-                Master the art of capturing wildlife in their natural habitat...
-              </p>
-              <Button
-                variant="link"
-                className="text-white hover:text-gray-300 transition-colors"
-                aria-label="Read more about wildlife photography"
-              >
-                Read More →
-              </Button>
-            </div>
-          </article>
-
-          {/* Blog Post 4 */}
-          <article className="bg-white/5 rounded-lg overflow-hidden">
-            <div className="relative h-48">
-              <Image
-                src="/blog-4.jpg"
-                alt="Animal behavior study"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <div className="text-sm text-gray-300 mb-2">Research</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Understanding Animal Behavior Patterns
-              </h3>
-              <p className="text-gray-300 mb-4">
-                Insights into how animals behave and adapt in their environments...
-              </p>
-              <Button
-                variant="link"
-                className="text-white hover:text-gray-300 transition-colors"
-                aria-label="Read more about animal behavior"
-              >
-                Read More →
-              </Button>
-            </div>
-          </article>
-
-          {/* Blog Post 5 */}
-          <article className="bg-white/5 rounded-lg overflow-hidden">
-            <div className="relative h-48">
-              <Image
-                src="/blog-5.jpg"
-                alt="Ecosystem preservation"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <div className="text-sm text-gray-300 mb-2">Ecosystem</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Preserving Natural Ecosystems
-              </h3>
-              <p className="text-gray-300 mb-4">
-                The importance of maintaining balanced and healthy ecosystems...
-              </p>
-              <Button
-                variant="link"
-                className="text-white hover:text-gray-300 transition-colors"
-                aria-label="Read more about ecosystem preservation"
-              >
-                Read More →
-              </Button>
-            </div>
-          </article>
-
-          {/* Blog Post 6 */}
-          <article className="bg-white/5 rounded-lg overflow-hidden">
-            <div className="relative h-48">
-              <Image
-                src="/blog-6.jpg"
-                alt="Wildlife education"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <div className="text-sm text-gray-300 mb-2">Education</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                The Future of Wildlife Education
-              </h3>
-              <p className="text-gray-300 mb-4">
-                How modern education is shaping wildlife conservation awareness...
-              </p>
-              <Button
-                variant="link"
-                className="text-white hover:text-gray-300 transition-colors"
-                aria-label="Read more about wildlife education"
-              >
-                Read More →
-              </Button>
-            </div>
-          </article>
-
+            {data.map((post:any) => {
+                return <BlogPreview post={post} key={post.id} />;
+            })}
         </div>
       </div>
     </section>
