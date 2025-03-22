@@ -8,6 +8,8 @@ import PageLoader from "@/components/page-loader";
 import FetchError from "@/components/fetch-error";
 import BlogCardPreview from "@/components/blog-card-preview";
 import BlogPreview from "@/components/blog-preview";
+import { cn } from "@/lib/utils";
+import { headingFont } from "@/lib/constants/fonts";
 
 export default function Blog() {
     const [data, setData] = useState<any>([]);
@@ -103,7 +105,7 @@ export default function Blog() {
       <div className="container mx-auto px-4">
         {/* Hero Content */}
         <div className="max-w-4xl mx-auto text-center mb-12 mt-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h1 className={cn(headingFont.className, "text-4xl md:text-5xl font-bold text-white mb-6")}>
             Welcome to Our Blog
           </h1>
           <p className="text-lg text-gray-200 mb-12">
@@ -111,7 +113,7 @@ export default function Blog() {
             and the natural world. Join us as we explore the fascinating realm of wildlife.
           </p>
 
-          <h2 className="text-2xl font-semibold text-white mb-4">
+          <h2 className={cn(headingFont.className, "text-2xl font-semibold text-white mb-4")}>
             Featured Posts
           </h2>
           <hr className="border-white/20 mb-8" />
