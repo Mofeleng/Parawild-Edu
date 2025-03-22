@@ -15,13 +15,15 @@ export default function Navbar() {
             <div className="container mx-auto px-4 py-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                        <Image 
-                            src="/Parawild-Edu.svg"
-                            alt="Parawild Edu Logo"
-                            width={119}
-                            height={15}
-                            className="w-auto h-auto"
-                        />
+                        <Link href="/">
+                            <Image 
+                                src="/Parawild-Edu.svg"
+                                alt="Parawild Edu Logo"
+                                width={119}
+                                height={15}
+                                className="w-auto h-auto"
+                            />
+                        </Link>
                     </div>
 
                     {/* Hamburger Menu Button */}
@@ -58,12 +60,12 @@ export default function Navbar() {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-8">
                         <Link 
-                            href="/blog"
+                            href="/blogs"
                             className="text-white uppercase text-sm font-medium hover:bg-black/60 px-4 py-2 rounded-md transition-colors"
                             tabIndex={0}
                             aria-label="Blog"
                         >
-                            Blog
+                            Blogs
                         </Link>
                         <Link
                             href="/workshops" 
@@ -88,10 +90,10 @@ export default function Navbar() {
                 <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} pt-4`}>
                     <div className="flex flex-col gap-2">
                         <Link 
-                            href="/blog"
+                            href="/blogs"
                             className="text-white uppercase text-sm font-medium hover:bg-black/60 px-4 py-2 rounded-md transition-colors text-center"
                             tabIndex={0}
-                            aria-label="Blog"
+                            aria-label="Blogs"
                         >
                             Blog
                         </Link>
