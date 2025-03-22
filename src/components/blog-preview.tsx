@@ -34,7 +34,7 @@ export default function BlogPreview({ post }: { post: any}) {
               </p>
               <div className="mt-auto">
                 <p className={cn(headingFont.className,"uppercase text-sm text-secondary-accent text-end mt-4")}>
-                  { post.author.name } at { useDateConvertToString(post.published, true)}
+                  By { post.author.name } on { useDateConvertToString(post.published, true)}
                 </p>
                 <Link
                   href={`/blog/${post.slug}`}
