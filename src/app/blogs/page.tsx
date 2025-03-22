@@ -96,6 +96,7 @@ export default function Blog() {
       }
     
       const featuredPosts:any = data.filter((post:any) => post.featured).slice(0, featuredPostsToShow);
+      const hasMore = data.length === blogsPerPage;
     return (
     <>
     <section className="bg-primary-accent py-16 relative min-h-screen w-full flex items-center">
@@ -131,6 +132,27 @@ export default function Blog() {
                 return <BlogPreview post={post} key={post.id} />;
             })}
         </div>
+      </div>
+    </section>
+    <section className="py-8">
+      <div className="container mx-auto px-4 flex justify-center gap-4">
+        <Button
+          variant="outline"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="text-white hover:text-gray-300 disabled:opacity-50"
+        >
+          Previous Page
+        </Button>
+
+        <Button
+          variant="outline" 
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+          disabled={!hasMore}
+          className="text-white hover:text-gray-300 disabled:opacity-50"
+        >
+          Next Page
+        </Button>
       </div>
     </section>
     </>
