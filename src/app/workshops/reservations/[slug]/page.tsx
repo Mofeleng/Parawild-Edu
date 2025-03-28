@@ -32,6 +32,10 @@ import {
 
 import useDateConvertToString from "@/lib/hooks/useDateConvertToString";
 import { cn } from "@/lib/utils";
+import FetchError from "@/components/fetch-error";
+import PageLoader from "@/components/page-loader";
+
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 
 // Define the form schema with Zod (including some cross-field validations)
 const registrationSchema = z
@@ -95,6 +99,7 @@ const Registration = () => {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [counterDate, setCounterDate] = useState<number>(0);
 
+
   const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT;
   const WORKSHOP_ATENDEE_MANAGER_AUTH =
     process.env.NEXT_PUBLIC_WORKSHOP_ATENDEE_MANAGER_AUTH;
@@ -154,10 +159,45 @@ const Registration = () => {
   // onSubmit function for form submission
   const onSubmit = async (data: RegistrationFormValues) => {
     console.log("Data: ", data, "Counter Date: ", counterDate);
+
+    try {
+      //submit data to hygraph
+
+      //if successful show paypal button
+
+      //if paypal successful:
+      //1. Update paymemt status
+
+      //2. Create an attendee for the workshop
+
+      //on success redirect to the success page
+
+    } catch (error) {
+      //Output an error
+    }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (fetchError) return <p>{fetchError}</p>;
+  const onCreateOrder = async (data:any, actions:any):Promise<any> => {
+    return actions.order.create({
+      purchase_units: [
+          {
+              amount: {
+                  value: 0.1
+              },
+          },
+      ],
+    });
+  }
+
+  const onApprove = async (data:any, actions:any):Promise<any> => {
+    return actions.order.capture().then( async (details:any) => {
+      console.log("Approved", data, "Details: ", details)
+
+    })
+  }
+
+  if (loading) return <PageLoader />;
+  if (fetchError) return <FetchError error={fetchError} />;
 
   return (
     <section className="py-24 px-8">
@@ -557,6 +597,14 @@ const Registration = () => {
                   // This FormMessage could also be rendered inside the FormField if needed.
                 />
                 <Button type="submit">Submit</Button>
+                <PayPalScriptProvider options={{"client-id": (process.env.NEXT_PUBLIC_PAYPAL_CLIENTID as string), currency: "USD", intent: "capture"}}>
+                  <PayPalButtons
+                    createOrder={(data, actions) => onCreateOrder(data, actions)}
+                    onApprove={(data, actions) => onApprove(data, actions)}
+                  >
+
+                  </PayPalButtons>
+                </PayPalScriptProvider>
               </form>
             </Form>
           </CardContent>
