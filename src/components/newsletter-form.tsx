@@ -102,8 +102,12 @@ export default function NewsletterForm() {
 
                         )}
                     />
-                    <Button type="submit" variant="secondary">
-                        Subscribe
+                    <Button type="submit" variant="secondary" disabled={loading}>
+                        {loading ? (
+                            "Please wait..."
+                        ): (
+                            "Subscribe"
+                            ) }
                     </Button>
                     </form>
                 </Form>
