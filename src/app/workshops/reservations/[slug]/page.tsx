@@ -98,11 +98,13 @@ const Registration = () => {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [counterDate, setCounterDate] = useState<number>(0);
+  const [ showPayPalButtons, setShowPayPalButtons ] = useState<boolean>(false)
+  const [ attendee, setAttendee ] = useState<any>(null)
+  const [ error, setError ] = useState<any>(null)
 
 
   const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT;
-  const WORKSHOP_ATENDEE_MANAGER_AUTH =
-    process.env.NEXT_PUBLIC_WORKSHOP_ATENDEE_MANAGER_AUTH;
+  const WORKSHOP_ATENDEE_MANAGER_AUTH = process.env.NEXT_PUBLIC_WORKSHOP_ATENDEE_MANAGER_AUTH;
 
   // Initialize react-hook-form with shadcn Form integration
   const form = useForm<RegistrationFormValues>({
@@ -158,10 +160,96 @@ const Registration = () => {
 
   // onSubmit function for form submission
   const onSubmit = async (data: RegistrationFormValues) => {
-    console.log("Data: ", data, "Counter Date: ", counterDate);
+    const { 
+      firstName, lastName, email, phoneNumber, degree, institution,
+      yearOfStudy, attendedWorkshops, attendedWorkshopContext, specificExpectedSkills,
+      emergencyName, emergencyEmail, emergencyRelationship, explainedHealthRequirements,
+      healthRequirements, dateSelected, applicationMotivation, knowledgeApplication
+     } = data
 
     try {
       //submit data to hygraph
+      const graphQLClient = new GraphQLClient((ENDPOINT as string), {
+        headers: {
+            authorization: `Bearer ${WORKSHOP_ATENDEE_MANAGER_AUTH!}`
+          }
+      })
+
+      const mutation = `
+        mutation CreateNewAttendee($fn: String!, $ln: String!, $em: String!, $pn: String!, $in: String!, $d: String!, $yos: String!, $wid: String!, $w: String!, $appm: String!, $attw: String!, $attwc: String!, $ssk: String!, $en: String!, $er: String!, $eea: String!, $hr: String!, $hre: String!, $paid: String!, $ds: String!) {
+            createAttendee(
+                data: {firstName: $fn, lastName: $ln, email: $em, phoneNumber: $pn, degree: $d, educationalInstitution:$in,  yearCompleted: $yos, workshopAttending: $w, workshopId: $wid, motivation: $appm, experience: $attw, experienceInfo: $attwc, expectedKnowledge: $ssk, emergencyContactName: $en, emergencyContactRelationship: $er, emergencyContactEmailAddress: $eea, healthRequirements: $hr, healthRequirementsExplained: $hre, paid: $paid, dateAttending: $ds}
+              ) {
+                    id,
+                    firstName,
+                    lastName, 
+                    email,
+                    phoneNumber,
+                    degree,
+                    educationalInstitution,
+                    yearCompleted,
+                    workshopAttending,
+                    workshopId,
+                    motivation,
+                    experience,
+                    experienceInfo,
+                    expectedKnowledge,
+                    emergencyContactName,
+                    emergencyContactRelationship, 
+                    emergencyContactEmailAddress,
+                    healthRequirements,
+                    healthRequirementsExplained,
+                    paid,
+                    dateAttending
+              }
+        } 
+        `;
+           /* workshop_to_payfor = workshop;
+            console.log("w: ", workshop_to_payfor);
+            console.log(toPayFor); */
+
+            const variables = {
+              fn: firstName || '',
+              ln: lastName || '',
+              em: email || '',
+              pn: phoneNumber || '',
+              in: institution || '',
+              d: degree || '',
+              yos: yearOfStudy || '',
+              wid: workshop.id || '',
+              w: workshop.title || '',
+              appm: applicationMotivation || '',
+              kapp: knowledgeApplication || '',
+              attw: attendedWorkshops || '',
+              attwc: attendedWorkshopContext || '',
+              ssk: specificExpectedSkills || '',
+              en: emergencyName || '',
+              eea: emergencyEmail || '',
+              er: emergencyRelationship || '',
+              hr: healthRequirements || '',
+              hre: explainedHealthRequirements || '',
+              paid: "false",
+              ds: dateSelected || ''
+            };
+            
+
+        console.log(variables)
+    
+        const result = await graphQLClient.request(mutation, variables);
+        console.log("Submit", result)
+        const response:any = await result;
+        const workshopAttendee = response.createAttendee || null;
+        
+        if (workshopAttendee) {
+            setError(null);
+            setShowPayPalButtons(true)
+            setAttendee(workshopAttendee);
+            console.log(`Successfully created an attendee for workshop: ${workshop.title}, `, attendee)
+        } else {
+          console.log("Something went wrong")
+           setError("Failed to upload information, please refresh and retry");
+        }
+
 
       //if successful show paypal button
 
@@ -596,15 +684,20 @@ const Registration = () => {
                   className="!ml-10"
                   // This FormMessage could also be rendered inside the FormField if needed.
                 />
-                <Button type="submit">Submit</Button>
-                <PayPalScriptProvider options={{"client-id": (process.env.NEXT_PUBLIC_PAYPAL_CLIENTID as string), currency: "USD", intent: "capture"}}>
-                  <PayPalButtons
-                    createOrder={(data, actions) => onCreateOrder(data, actions)}
-                    onApprove={(data, actions) => onApprove(data, actions)}
-                  >
-
-                  </PayPalButtons>
-                </PayPalScriptProvider>
+                {
+                  !showPayPalButtons ? (
+                    <Button type="submit">Submit</Button>
+                  ) : (
+                    <PayPalScriptProvider options={{"client-id": (process.env.NEXT_PUBLIC_PAYPAL_CLIENTID as string), currency: "USD", intent: "capture"}}>
+                      <PayPalButtons
+                        createOrder={(data, actions) => onCreateOrder(data, actions)}
+                        onApprove={(data, actions) => onApprove(data, actions)}
+                      >
+                      </PayPalButtons>
+                  </PayPalScriptProvider>
+                  )
+                }
+               
               </form>
             </Form>
           </CardContent>
