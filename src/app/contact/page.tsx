@@ -55,13 +55,13 @@ export default function Contact() {
 
   return (
     <>
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-24">
         <section className="text-center mb-12">
           <h1 className="text-4xl font-bold">Contact Us</h1>
           <p className="text-lg text-muted-foreground mt-2">Get in touch with us for more information.</p>
         </section>
         <div className="grid md:grid-cols-2 gap-8">
-          <Card>
+          <Card className='bg-primary-accent'>
             <CardHeader>
               <CardTitle>Contact Us</CardTitle>
             </CardHeader>
@@ -69,7 +69,7 @@ export default function Contact() {
               <ContactForm />
             </CardContent>
           </Card>
-          <Card>
+          <Card className='bg-primary-accent'>
             <CardHeader>
               <CardTitle>Office Details</CardTitle>
             </CardHeader>
@@ -93,13 +93,13 @@ export default function Contact() {
             </CardContent>
           </Card>
         </div>
-        <section className="bg-accent text-center py-12 rounded-lg mt-12">
+        <section className="text-center py-12 rounded-lg mt-12 border border-secondary bg-primary-accent ">
           <h2 className="text-2xl font-bold text-white">Join one of our workshops</h2>
           <p className="text-white text-lg mt-2">
             Learn more about wildlife management by joining one of our workshops. Available for vets and non-vets.
           </p>
           <Link href="/workshops" passHref>
-            <Button variant="outline" className="mt-4">See Workshops</Button>
+            <Button variant="secondary" className="mt-4">See Workshops</Button>
           </Link>
         </section>
       </div>
