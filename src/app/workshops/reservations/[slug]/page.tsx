@@ -231,12 +231,8 @@ const Registration = () => {
               paid: "false",
               ds: dateSelected || ''
             };
-            
-
-        console.log(variables)
     
         const result = await graphQLClient.request(mutation, variables);
-        console.log("Submit", result)
         const response:any = await result;
         const workshopAttendee = response.createAttendee || null;
         
