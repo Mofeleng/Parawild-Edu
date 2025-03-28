@@ -18,6 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { contactFormSchema } from "@/lib/constants/zodschemas";
 
 import { useState } from "react";
+import FormSuccessMessage from "./form-success"
+import FormErrorMessage from "./form-error"
 
 export default function ContactForm () {
     const [ success, setSuccess ] = useState<boolean>(false)
@@ -64,9 +66,7 @@ export default function ContactForm () {
         <>
               {
               success ? (
-                <div className="bg-green-400 text-white p-4 rounded-md cursor-pointer" onClick={() => handleFormReset()}>
-                  <div>Thank you! Your submission has been received!</div>
-                </div>
+                <FormSuccessMessage onClick={() => handleFormReset()} />
               ) : (
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -118,9 +118,7 @@ export default function ContactForm () {
 
             {
               error && (
-                <div className="bg-red-400 text-white p-4 rounded-md cursor-pointer mt-10" onClick={() => handleFormReset()}>
-                  <div>Something went wrong. Please contact pienaarmarkus007@gmail.com if error persists</div>
-                </div>
+                <FormErrorMessage onClick={() => handleFormReset()} />
               )
             }
           
