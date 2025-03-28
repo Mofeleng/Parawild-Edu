@@ -37,6 +37,9 @@ import PageLoader from "@/components/page-loader";
 
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 
+//grqphql
+import { graphQLClient, graphQLClientWorkshopManagement, graphQLClientWorkshopWithAuth } from "@/lib/constants/graph-ql";
+
 // Define the form schema with Zod (including some cross-field validations)
 const registrationSchema = z
   .object({
@@ -105,6 +108,7 @@ const Registration = () => {
 
   const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT;
   const WORKSHOP_ATENDEE_MANAGER_AUTH = process.env.NEXT_PUBLIC_WORKSHOP_ATENDEE_MANAGER_AUTH;
+  const WORKSHOP_TOKEN = process.env.NEXT_PUBLIC_WORKSHOPTOKEN;
 
   // Initialize react-hook-form with shadcn Form integration
   const form = useForm<RegistrationFormValues>({
@@ -120,7 +124,7 @@ const Registration = () => {
   useEffect(() => {
     const fetchWorkshop = async () => {
       try {
-        const graphqlClient = new GraphQLClient(ENDPOINT as string);
+        //const graphqlClient = new GraphQLClient(ENDPOINT as string);
         const query = gql`
           query GetWorkshop($slug: String!) {
             workshop(where: { slug: $slug }) {
@@ -136,7 +140,7 @@ const Registration = () => {
           }
         `;
         const variables = { slug };
-        const result: any = await graphqlClient.request(query, variables);
+        const result: any = await graphQLClient.request(query, variables);
         if (result.workshop) {
           setWorkshop(result.workshop);
           setToPayFor(result.workshop);
@@ -169,11 +173,11 @@ const Registration = () => {
 
     try {
       //submit data to hygraph
-      const graphQLClient = new GraphQLClient((ENDPOINT as string), {
+      /*const graphQLClient = new GraphQLClient((ENDPOINT as string), {
         headers: {
             authorization: `Bearer ${WORKSHOP_ATENDEE_MANAGER_AUTH!}`
           }
-      })
+      })*/
 
       const mutation = `
         mutation CreateNewAttendee($fn: String!, $ln: String!, $em: String!, $pn: String!, $in: String!, $d: String!, $yos: String!, $wid: String!, $w: String!, $appm: String!, $attw: String!, $attwc: String!, $ssk: String!, $en: String!, $er: String!, $eea: String!, $hr: String!, $hre: String!, $paid: String!, $ds: String!) {
@@ -232,7 +236,7 @@ const Registration = () => {
               ds: dateSelected || ''
             };
     
-        const result = await graphQLClient.request(mutation, variables);
+        const result = await graphQLClientWorkshopWithAuth.request(mutation, variables);
         const response:any = await result;
         const workshopAttendee = response.createAttendee || null;
         
@@ -250,11 +254,7 @@ const Registration = () => {
       //if successful show paypal button
 
       //if paypal successful:
-      //1. Update paymemt status
-
-      //2. Create an attendee for the workshop
-
-      //on success redirect to the success page
+      
 
     } catch (error) {
       //Output an error
@@ -266,7 +266,7 @@ const Registration = () => {
       purchase_units: [
           {
               amount: {
-                  value: 0.1
+                  value: workshop.reservationFee!
               },
           },
       ],
@@ -275,7 +275,83 @@ const Registration = () => {
 
   const onApprove = async (data:any, actions:any):Promise<any> => {
     return actions.order.capture().then( async (details:any) => {
-      console.log("Approved", data, "Details: ", details)
+      
+      try {
+        //1. Update paymemt status
+        const updateAttendee = gql`
+          mutation UpdateAttendee($id: ID!) {
+            updateAttendee(data: {paid: "true"}, where: {id: $id}) {
+              paid
+            }
+          }
+        `;
+      const variables = {
+        id: attendee.id,
+      }
+
+      const result:any = await graphQLClientWorkshopWithAuth.request(updateAttendee, variables);
+      const response = await result ;
+
+      //2. Decrease the amount of spots left in the workshop
+      const updateWorkshop = gql`
+        mutation UpdateWorkshop($id: ID!, $attending: Int!, $secondWorkshopAttending: Int!) {
+          updateWorkshop(data: {attending: $attending, secondWorkshopAttending: $secondWorkshopAttending}, where: {id: $id}) {
+            attending,
+            secondWorkshopAttending
+          }
+        }
+      `;
+      let workshop_date_1:number;
+      let workshop_date_2:number;
+
+      switch(counterDate) {
+        case 0:
+          workshop_date_1 = workshop.attending - 1;
+          workshop_date_2 = workshop.secondWorkshopAttending;
+          break;
+
+        case 1:
+          workshop_date_1 = workshop.attending;
+          workshop_date_2 = workshop.secondWorkshopAttending - 1;
+          break;
+
+        default:
+          throw new Error("Counter date is not defined")
+      }
+
+      const workshop_vars = {
+        id: workshop.id,
+        attending: workshop_date_1,
+        secondWorkshopAttending: workshop_date_2
+      }
+
+      const res_workshop = await graphQLClientWorkshopManagement.request(updateWorkshop, workshop_vars);
+      const resp_workshop = await res_workshop;
+      
+      //publish the updates
+      const publishWorkshop = gql`
+        mutation PublishWorkshop($id: ID!) {
+          publishWorkshop(where: {id: $id}, to: PUBLISHED) {
+            attending
+            secondWorkshopAttending
+          }
+        }
+      `;
+
+      const update_id_var = {
+        id: workshop.id
+      }
+
+      const res_publish = await graphQLClientWorkshopManagement.request(publishWorkshop, update_id_var);
+      const resp_publish = await res_publish;
+
+      console.log("Updated workshop: ", resp_publish);
+
+      //Send an email:
+      
+      } catch (error:any) {
+        console.log("Something went wrong", error.message)
+      }
 
     })
   }
