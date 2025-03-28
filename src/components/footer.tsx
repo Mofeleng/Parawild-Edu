@@ -2,36 +2,10 @@
 "use client"
 
 import Link from "next/link"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import NewsletterForm from "./newsletter-form"
 
-const newsletterSchema = z.object({
-  email: z.string().email("Please enter a valid email address")
-})
 
 export default function Footer() {
-  const form = useForm<z.infer<typeof newsletterSchema>>({
-    resolver: zodResolver(newsletterSchema),
-    defaultValues: {
-      email: "",
-    },
-  })
-
-  const handleSubmit = async (values: z.infer<typeof newsletterSchema>) => {
-    // Handle newsletter signup
-    console.log(values)
-  }
-
   return (
     <footer className="bg-[#0e0e0e] py-12">
       <div className="container mx-auto px-4">
@@ -78,29 +52,7 @@ export default function Footer() {
           {/* Newsletter Section */}
           <div>
             <h3 className="text-xl font-bold text-white mb-4">Join Our Newsletter</h3>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input 
-                          placeholder="Enter your email" 
-                          {...field}
-                          className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" variant="secondary">
-                  Subscribe
-                </Button>
-              </form>
-            </Form>
+            <NewsletterForm />
           </div>
         </div>
 
