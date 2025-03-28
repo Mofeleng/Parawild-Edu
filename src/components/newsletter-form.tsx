@@ -18,17 +18,41 @@ export default function NewsletterForm() {
     const form = useForm<z.infer<typeof newsletterSchema>>({
         resolver: zodResolver(newsletterSchema),
         defaultValues: {
-          email: "",
+          name: "",
+          email: ""
         },
       })
     
       const handleSubmit = async (values: z.infer<typeof newsletterSchema>) => {
-        // Handle newsletter signup
-        console.log(values)
+        const req = await fetch('/api/subscribe', {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(values)
+
+        })
       }
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                <FormItem>
+                    <FormControl>
+                    <Input 
+                        placeholder="Enter your name" 
+                        {...field}
+                        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                    />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+
+                )}
+            />
             <FormField
                 control={form.control}
                 name="email"
@@ -43,6 +67,7 @@ export default function NewsletterForm() {
                     </FormControl>
                     <FormMessage />
                 </FormItem>
+
                 )}
             />
             <Button type="submit" variant="secondary">

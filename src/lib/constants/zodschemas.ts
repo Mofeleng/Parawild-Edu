@@ -7,5 +7,6 @@ export const contactFormSchema = z.object({
 })
 
 export const newsletterSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 charecters long"),
     email: z.string().email("Please enter a valid email address")
   })
