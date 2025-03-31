@@ -373,11 +373,13 @@ const Registration = () => {
         
       } else {
         const data = await email_request.json()
-        console.log(`Email successfully sent: ${data}`);
+        router.push('/success') //on success
 
       }
       } catch (error:any) {
-        console.log("Something went wrong", error.message)
+        alert("Something went wrong. Please try again.")
+        //router.refresh() //monitor this
+
       }
 
     })
