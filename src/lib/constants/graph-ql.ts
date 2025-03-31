@@ -17,3 +17,11 @@ export const graphQLClientWorkshopManagement = new GraphQLClient((ENDPOINT as st
       authorization: `Bearer ${WORKSHOP_TOKEN}`
     }
   });
+
+export const graphQlClientFormFooter = new GraphQLClient((ENDPOINT as string), {
+  method: 'GET',
+  jsonSerializer: {
+    parse: JSON.parse,
+    stringify: JSON.stringify
+  }
+});

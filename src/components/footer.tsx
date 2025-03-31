@@ -3,9 +3,45 @@
 
 import Link from "next/link"
 import NewsletterForm from "./newsletter-form"
-
+import { useEffect, useState } from "react";
+import { gql } from "graphql-request";
+import { graphQlClientFormFooter } from "@/lib/constants/graph-ql";
+import PageLoader from "./page-loader";
+import FetchError from "./fetch-error";
+import { getContactPage } from "@/lib/actions/graphql-footer";
 
 export default function Footer() {
+  const [ res, setRes ] = useState<any>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => 
+    {
+      const fetchContactInfo = async () => {
+        try {
+          const result = await graphQlClientFormFooter.request(getContactPage);
+          const response:any = await result;
+          
+          setRes(response)
+          setLoading(false)
+        } catch (error) {
+          console.log("Something went wrong: ", error)
+        }
+      }
+
+      fetchContactInfo();
+    }, [])
+
+    if (loading) {
+      return (
+        <PageLoader />
+    )
+    }
+    if (!res.contactPages) {
+      return (
+          <FetchError error="Something went wrong while fetching the contact details" />
+      )
+    } 
+
   return (
     <footer className="bg-[#0e0e0e] py-12">
       <div className="container mx-auto px-4">
@@ -13,13 +49,14 @@ export default function Footer() {
           
           {/* Address Section */}
           <div>
-            <h3 className="text-xl font-bold text-white mb-4">Address</h3>
+            <h3 className="text-xl font-bold text-white mb-1">Address</h3>
             <address className="text-gray-300 not-italic">
-              <p>Parawild Edu</p>
-              <p>123 Nature Street</p>
-              <p>Wilderness Park</p>
-              <p>South Africa</p>
+              <div className="listitem" dangerouslySetInnerHTML={{__html: res.contactPages[0].location.html}}></div>
             </address>
+            <h3 className="text-xl font-bold text-white mt-2 mb-1">Contact</h3>
+            <div className="text-gray-300 not-italic">
+              <div className="listitem" dangerouslySetInnerHTML={{__html: res.contactPages[0].contactInformation.html}}></div>
+            </div>
           </div>
 
           {/* Resources Section */}
@@ -42,7 +79,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/termsandconditions" className="text-gray-300 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
