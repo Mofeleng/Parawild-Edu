@@ -348,7 +348,34 @@ const Registration = () => {
       console.log("Updated workshop: ", resp_publish);
 
       //Send an email:
-      
+      const email_data = {
+        to: attendee.email,
+        subject: `Successfully bought ticket for workshop: ${workshop.title}`,
+        html: `Congratulations ${attendee.firstName} you have successfully reserved your spot for the workshop: ${workshop.title}. Please keep an eye on your emails, one of our representitives will be in touch with you.`,
+        customer_name: attendee.firstName,
+        workshop_title: workshop.title,
+        workshop_date: attendee.dateAttending,
+        email: attendee.email,
+        address: workshop.address
+      }
+      const email_request = await fetch('/api/reservations', {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify(email_data)
+      })
+
+      if (!email_request.ok) {
+        const errData = await response.json();
+        console.log("Error", errData);
+        console.log("");
+        
+      } else {
+        const data = await email_request.json()
+        console.log(`Email successfully sent: ${data}`);
+
+      }
       } catch (error:any) {
         console.log("Something went wrong", error.message)
       }
