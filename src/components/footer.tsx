@@ -5,7 +5,7 @@ import Link from "next/link"
 import NewsletterForm from "./newsletter-form"
 import { useEffect, useState } from "react";
 import { gql } from "graphql-request";
-import { graphQlClientFormFooter } from "@/lib/constants/graph-ql";
+import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import PageLoader from "./page-loader";
 import FetchError from "./fetch-error";
 import { getContactPage } from "@/lib/actions/graphql-footer";
@@ -18,7 +18,7 @@ export default function Footer() {
     {
       const fetchContactInfo = async () => {
         try {
-          const result = await graphQlClientFormFooter.request(getContactPage);
+          const result = await graphQlClientWithSerializer.request(getContactPage);
           const response:any = await result;
           
           setRes(response)

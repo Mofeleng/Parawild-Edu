@@ -18,7 +18,7 @@ export const graphQLClientWorkshopManagement = new GraphQLClient((ENDPOINT as st
     }
   });
 
-export const graphQlClientFormFooter = new GraphQLClient((ENDPOINT as string), {
+export const graphQlClientWithSerializer = new GraphQLClient((ENDPOINT as string), {
   method: 'GET',
   jsonSerializer: {
     parse: JSON.parse,
