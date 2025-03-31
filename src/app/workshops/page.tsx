@@ -8,6 +8,8 @@ import { headingFont } from "@/lib/constants/fonts";
 import { cn } from "@/lib/utils";
 import WorkshopPreviewCard from "@/components/vet-card-preview";
 
+//import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
+
 export default function Workshops() {
     const [ workshops, setWorkshops ] = useState<any>([]);
     const [ loading, setLoading ] = useState<boolean>(true);

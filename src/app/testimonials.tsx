@@ -4,41 +4,20 @@ import React, { useState, useEffect } from "react"
 import TestimonialCard from "@/components/testimonial-card"
 import { headingFont } from "@/lib/constants/fonts"
 import { cn } from "@/lib/utils"
-import { GraphQLClient, gql } from "graphql-request"
+import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql"
 import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
+import { getTestimonials } from "@/lib/graphQL/homepage"
 
 export default function TestimonialsSection() {
   const [testimonials, setTestimonials] = useState<any[]>([])
   const [error, setError] = useState<boolean | string>(false)
   const [loadingTestimonials, setLoadingTestimonials] = useState<boolean>(true)
-  const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT
 
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const graphQLClient = new GraphQLClient(ENDPOINT!, {
-          method: "GET",
-          jsonSerializer: {
-            parse: JSON.parse,
-            stringify: JSON.stringify,
-          },
-        })
-
-        const query = gql`
-          query Testimonials {
-            testimonials(first: 10) {
-              id
-              name
-              proffession
-              photo {
-                url
-              }
-              testimonial
-            }
-          }
-        `
-        const result: any = await graphQLClient.request(query)
+        const result: any = await graphQlClientWithSerializer.request(getTestimonials)
         const response = result.testimonials || null
 
         if (!response) {
@@ -53,7 +32,7 @@ export default function TestimonialsSection() {
       }
     }
     fetchTestimonials()
-  }, [ENDPOINT])
+  }, [])
 
   const responsive = {
     superLargeDesktop: {

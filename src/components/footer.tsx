@@ -8,7 +8,7 @@ import { gql } from "graphql-request";
 import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import PageLoader from "./page-loader";
 import FetchError from "./fetch-error";
-import { getContactPage } from "@/lib/actions/graphql-footer";
+import { getContactPage } from "@/lib/graphQL/nav-footer";
 
 export default function Footer() {
   const [ res, setRes ] = useState<any>([]);

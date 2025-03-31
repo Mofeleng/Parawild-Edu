@@ -3,13 +3,14 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { GraphQLClient, gql } from "graphql-request";
+import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import PageLoader from "@/components/page-loader";
 import FetchError from "@/components/fetch-error";
 import BlogCardPreview from "@/components/blog-card-preview";
 import BlogPreview from "@/components/blog-preview";
 import { cn } from "@/lib/utils";
 import { headingFont } from "@/lib/constants/fonts";
+import { getBlogPosts } from "@/lib/graphQL/blogs";
 
 export default function Blog() {
     const [data, setData] = useState<any>([]);
@@ -24,45 +25,11 @@ export default function Blog() {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const gqlClient = new GraphQLClient(ENDPOINT!, {
-              method: 'GET',
-              jsonSerializer: {
-                parse: JSON.parse,
-                stringify: JSON.stringify
-              }
-            });
-    
-            const query = gql`
-              query Posts($first: Int, $skip: Int) {
-                blogs(first: $first, skip: $skip) {
-                  id
-                  title
-                  slug
-                  featured
-                  published
-                  preview
-                  cover {
-                    url
-                  }
-                  categories {
-                    category
-                  }
-                  author {
-                    name
-                    avatar {
-                      url
-                    }
-                  }
-                }
-              }
-            `;
-    
             const variables = {
               first: blogsPerPage,
               skip: (currentPage - 1) * blogsPerPage
             };
-    
-            const result = await gqlClient.request(query, variables);
+            const result = await graphQlClientWithSerializer.request(getBlogPosts, variables);
             const response:any = await result;
             setData(response.posts);
             console.log(response)
