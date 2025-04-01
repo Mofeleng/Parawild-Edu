@@ -39,6 +39,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 
 //grqphql
 import { graphQLClient, graphQLClientWorkshopManagement, graphQLClientWorkshopWithAuth } from "@/lib/constants/graph-ql";
+import { createAttendeeMutation, getCurrentWorkshop, publishWorkshopMutation, updateAttendeeMutation, updateWorkshopMutation } from "@/lib/graphQL/reservations";
 
 // Define the form schema with Zod (including some cross-field validations)
 const registrationSchema = z
@@ -105,11 +106,6 @@ const Registration = () => {
   const [ attendee, setAttendee ] = useState<any>(null)
   const [ error, setError ] = useState<any>(null)
 
-
-  const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT;
-  const WORKSHOP_ATENDEE_MANAGER_AUTH = process.env.NEXT_PUBLIC_WORKSHOP_ATENDEE_MANAGER_AUTH;
-  const WORKSHOP_TOKEN = process.env.NEXT_PUBLIC_WORKSHOPTOKEN;
-
   // Initialize react-hook-form with shadcn Form integration
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
@@ -124,23 +120,8 @@ const Registration = () => {
   useEffect(() => {
     const fetchWorkshop = async () => {
       try {
-        //const graphqlClient = new GraphQLClient(ENDPOINT as string);
-        const query = gql`
-          query GetWorkshop($slug: String!) {
-            workshop(where: { slug: $slug }) {
-              title
-              slug
-              id
-              reservationFee
-              attending
-              secondWorkshopAttending
-              dates
-              address
-            }
-          }
-        `;
         const variables = { slug };
-        const result: any = await graphQLClient.request(query, variables);
+        const result: any = await graphQLClient.request(getCurrentWorkshop, variables);
         if (result.workshop) {
           setWorkshop(result.workshop);
           setToPayFor(result.workshop);
@@ -173,45 +154,6 @@ const Registration = () => {
 
     try {
       //submit data to hygraph
-      /*const graphQLClient = new GraphQLClient((ENDPOINT as string), {
-        headers: {
-            authorization: `Bearer ${WORKSHOP_ATENDEE_MANAGER_AUTH!}`
-          }
-      })*/
-
-      const mutation = `
-        mutation CreateNewAttendee($fn: String!, $ln: String!, $em: String!, $pn: String!, $in: String!, $d: String!, $yos: String!, $wid: String!, $w: String!, $appm: String!, $attw: String!, $attwc: String!, $ssk: String!, $en: String!, $er: String!, $eea: String!, $hr: String!, $hre: String!, $paid: String!, $ds: String!) {
-            createAttendee(
-                data: {firstName: $fn, lastName: $ln, email: $em, phoneNumber: $pn, degree: $d, educationalInstitution:$in,  yearCompleted: $yos, workshopAttending: $w, workshopId: $wid, motivation: $appm, experience: $attw, experienceInfo: $attwc, expectedKnowledge: $ssk, emergencyContactName: $en, emergencyContactRelationship: $er, emergencyContactEmailAddress: $eea, healthRequirements: $hr, healthRequirementsExplained: $hre, paid: $paid, dateAttending: $ds}
-              ) {
-                    id,
-                    firstName,
-                    lastName, 
-                    email,
-                    phoneNumber,
-                    degree,
-                    educationalInstitution,
-                    yearCompleted,
-                    workshopAttending,
-                    workshopId,
-                    motivation,
-                    experience,
-                    experienceInfo,
-                    expectedKnowledge,
-                    emergencyContactName,
-                    emergencyContactRelationship, 
-                    emergencyContactEmailAddress,
-                    healthRequirements,
-                    healthRequirementsExplained,
-                    paid,
-                    dateAttending
-              }
-        } 
-        `;
-           /* workshop_to_payfor = workshop;
-            console.log("w: ", workshop_to_payfor);
-            console.log(toPayFor); */
-
             const variables = {
               fn: firstName || '',
               ln: lastName || '',
@@ -236,7 +178,7 @@ const Registration = () => {
               ds: dateSelected || ''
             };
     
-        const result = await graphQLClientWorkshopWithAuth.request(mutation, variables);
+        const result = await graphQLClientWorkshopWithAuth.request(createAttendeeMutation, variables);
         const response:any = await result;
         const workshopAttendee = response.createAttendee || null;
         
@@ -249,12 +191,6 @@ const Registration = () => {
           console.log("Something went wrong")
            setError("Failed to upload information, please refresh and retry");
         }
-
-
-      //if successful show paypal button
-
-      //if paypal successful:
-      
 
     } catch (error) {
       //Output an error
@@ -278,110 +214,68 @@ const Registration = () => {
       
       try {
         //1. Update paymemt status
-        const updateAttendee = gql`
-          mutation UpdateAttendee($id: ID!) {
-            updateAttendee(data: {paid: "true"}, where: {id: $id}) {
-              paid
-            }
-          }
-        `;
-      const variables = {
-        id: attendee.id,
-      }
-
-      const result:any = await graphQLClientWorkshopWithAuth.request(updateAttendee, variables);
-      const response = await result ;
-
-      //2. Decrease the amount of spots left in the workshop
-      const updateWorkshop = gql`
-        mutation UpdateWorkshop($id: ID!, $attending: Int!, $secondWorkshopAttending: Int!) {
-          updateWorkshop(data: {attending: $attending, secondWorkshopAttending: $secondWorkshopAttending}, where: {id: $id}) {
-            attending,
-            secondWorkshopAttending
-          }
+        const variables = {
+          id: attendee.id,
         }
-      `;
-      let workshop_date_1:number;
-      let workshop_date_2:number;
 
-      switch(counterDate) {
-        case 0:
-          workshop_date_1 = workshop.attending - 1;
-          workshop_date_2 = workshop.secondWorkshopAttending;
-          break;
+        const result:any = await graphQLClientWorkshopWithAuth.request(updateAttendeeMutation, variables);
+        const response = await result ;
 
-        case 1:
-          workshop_date_1 = workshop.attending;
-          workshop_date_2 = workshop.secondWorkshopAttending - 1;
-          break;
+        //2. Decrease the amount of spots left in the workshop
+        let workshop_date_1:number;
+        let workshop_date_2:number;
 
-        default:
-          throw new Error("Counter date is not defined")
-      }
-
-      const workshop_vars = {
-        id: workshop.id,
-        attending: workshop_date_1,
-        secondWorkshopAttending: workshop_date_2
-      }
-
-      const res_workshop = await graphQLClientWorkshopManagement.request(updateWorkshop, workshop_vars);
-      const resp_workshop = await res_workshop;
-      
-      //publish the updates
-      const publishWorkshop = gql`
-        mutation PublishWorkshop($id: ID!) {
-          publishWorkshop(where: {id: $id}, to: PUBLISHED) {
-            attending
-            secondWorkshopAttending
-          }
+        switch(counterDate) {
+          case 0:
+            workshop_date_1 = workshop.attending - 1;
+            workshop_date_2 = workshop.secondWorkshopAttending;
+            break;
+          case 1:
+            workshop_date_1 = workshop.attending;
+            workshop_date_2 = workshop.secondWorkshopAttending - 1;
+            break;
+          default:
+            throw new Error("Counter date is not defined")
         }
-      `;
 
-      const update_id_var = {
-        id: workshop.id
-      }
+        const workshop_vars = {
+          id: workshop.id,
+          attending: workshop_date_1,
+          secondWorkshopAttending: workshop_date_2
+        }
 
-      const res_publish = await graphQLClientWorkshopManagement.request(publishWorkshop, update_id_var);
-      const resp_publish = await res_publish;
+        const res_workshop = await graphQLClientWorkshopManagement.request(updateWorkshopMutation, workshop_vars);
+        const resp_workshop = await res_workshop;
 
-      console.log("Updated workshop: ", resp_publish);
+        const update_id_var = {
+          id: workshop.id
+        }
+        const res_publish = await graphQLClientWorkshopManagement.request(publishWorkshopMutation, update_id_var);
+        const resp_publish = await res_publish;
 
-      //Send an email:
-      const email_data = {
-        to: attendee.email,
-        subject: `Successfully bought ticket for workshop: ${workshop.title}`,
-        html: `Congratulations ${attendee.firstName} you have successfully reserved your spot for the workshop: ${workshop.title}. Please keep an eye on your emails, one of our representitives will be in touch with you.`,
-        customer_name: attendee.firstName,
-        workshop_title: workshop.title,
-        workshop_date: attendee.dateAttending,
-        email: attendee.email,
-        address: workshop.address
-      }
-      const email_request = await fetch('/api/reservations', {
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST",
-        body: JSON.stringify(email_data)
-      })
+        console.log("Updated workshop: ", resp_publish);
 
-      if (!email_request.ok) {
-        const errData = await response.json();
-        console.log("Error", errData);
-        console.log("");
-        
-      } else {
-        const data = await email_request.json()
-        router.push('/success') //on success
+        //Send an email:
+        const email_data = { to: attendee.email, subject: `Successfully bought ticket for workshop: ${workshop.title}`, html: `Congratulations ${attendee.firstName} you have successfully reserved your spot for the workshop: ${workshop.title}. Please keep an eye on your emails, one of our representitives will be in touch with you.`, customer_name: attendee.firstName, workshop_title: workshop.title, workshop_date: attendee.dateAttending, email: attendee.email, address: workshop.address }
+        const email_request = await fetch('/api/reservations', {
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST",
+          body: JSON.stringify(email_data)
+        })
 
-      }
+        if (!email_request.ok) {
+          const errData = await response.json();
+          console.log("Error", errData);
+        } else {
+          const data = await email_request.json()
+          router.push('/success') //on success
+        }
       } catch (error:any) {
         alert("Something went wrong. Please try again.")
         //router.refresh() //monitor this
-
       }
-
     })
   }
 
