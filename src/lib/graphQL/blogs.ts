@@ -24,3 +24,27 @@ export const getBlogPosts = gql`
     }
     }
 `;
+
+export const getCurrentPost = gql`
+query Posts($slug: String!) {
+  blog(where: { slug: $slug }) {
+    title
+    published
+    preview
+    categories {
+      category
+    }
+    id
+    content {
+      html
+    }
+    author {
+      name
+      bio
+      avatar {
+        url
+      }
+    }
+  }
+}
+`;
