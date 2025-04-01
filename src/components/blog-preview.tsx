@@ -37,7 +37,7 @@ export default function BlogPreview({ post }: { post: any}) {
                   By { post.author.name } on { useDateConvertToString(post.published, true)}
                 </p>
                 <Link
-                  href={`/blog/${post.slug}`}
+                  href={`/blogs/${post.slug}`}
                   className={cn(buttonVariants({
                       variant: 'link'
                   }),"text-white hover:text-gray-300 transition-colors")}
