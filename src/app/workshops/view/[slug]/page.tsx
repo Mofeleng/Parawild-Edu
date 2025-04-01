@@ -10,8 +10,9 @@ import { useEffect, useState } from "react";
 import useDateConvertToString from "@/lib/hooks/useDateConvertToString";
 import FetchError from "@/components/fetch-error";
 import PageLoader from "@/components/page-loader";
-import { GraphQLClient, gql } from "graphql-request";
+import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import Link from "next/link";
+import { getCurrentWorkshop } from "@/lib/graphQL/workshops";
 
 export default function WorkshopView() {
     const { slug } = useParams();
@@ -23,46 +24,13 @@ export default function WorkshopView() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const gqlClient = new GraphQLClient(ENDPOINT!, {
-                    method: 'GET',
-                    jsonSerializer: {
-                      parse: JSON.parse,
-                      stringify: JSON.stringify
-                    }
-                });
-
-                const query = gql`
-                    query Workshops($slug: String!) {
-                    workshop(where: {slug: $slug}) {
-                        title
-                        slug
-                        id
-                        active
-                        forVets
-                        dates
-                        attending
-                        secondWorkshopAttending
-                        reservationFee
-                        address
-                        coverPhoto {
-                        url
-                        }
-                        about {
-                        html
-                        }
-                    }
-                    }
-                `;
-
                 const variables = {
                     slug: slug,
                 }
-
-                const result = await gqlClient.request(query, variables);
-
+                const result = await graphQlClientWithSerializer.request(getCurrentWorkshop, variables);
                 const response:any = await result;
                 const workshopData = response.workshop || [];
-                console.log(response);
+
                 setWorkshop(workshopData);
                 setLoading(false);
             } catch (error:any) {
@@ -79,7 +47,6 @@ export default function WorkshopView() {
       )
       }
       if (!workshop || workshop.length === 0) {
-        // Handle the case where workshops is empty or not an array
         return (
           <div>
             <section className="section">
