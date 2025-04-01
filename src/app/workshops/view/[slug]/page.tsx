@@ -19,8 +19,7 @@ export default function WorkshopView() {
     const [ workshop, setWorkshop ] = useState<any>([]);
     const [ loading, setLoading ] = useState<boolean>(true);
     const [ error, setError ] = useState<null|string>(null);
-
-    const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT;
+    
     useEffect(() => {
         const fetchData = async () => {
             try {

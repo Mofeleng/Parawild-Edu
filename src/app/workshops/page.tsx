@@ -7,8 +7,9 @@ import FetchError from "@/components/fetch-error";
 import { headingFont } from "@/lib/constants/fonts";
 import { cn } from "@/lib/utils";
 import WorkshopPreviewCard from "@/components/vet-card-preview";
-
-//import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
+import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
+import { getWorkshops } from "@/lib/graphQL/workshops";
+import { getBlogPosts } from "@/lib/graphQL/workshops";
 
 export default function Workshops() {
     const [ workshops, setWorkshops ] = useState<any>([]);
@@ -19,69 +20,21 @@ export default function Workshops() {
     const [postLoading, setPostLoading] = useState<boolean>(true);
     const [postError, setPostError] = useState<null|string>(null);
 
-    const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT;
-
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const graphQLClient = new GraphQLClient(ENDPOINT!, {
-              method: 'GET',
-              jsonSerializer: {
-                parse: JSON.parse,
-                stringify: JSON.stringify
-              }
-            });
-            const query = gql`
-            query Workshops {
-              workshops(where: {active: true}) {
-              title
-              slug
-              id
-              active
-              forVets
-              preview
-              coverPhoto {
-                url
-              }
-            }
-            }
-            `;
-      
-            const result = await graphQLClient.request(query);
+            const result = await graphQlClientWithSerializer.request(getWorkshops);
             const response:any = await result;
       
             const workshopData = response.workshops || [];
             setWorkshops(workshopData);
-    
             setLoading(false);
     
-            const postQuery = gql`
-            query Posts() {
-              blogs(first: 4) {
-                id
-                title
-                slug
-                featured
-                published
-                preview
-                categories {
-                  category
-                }
-                author {
-                  name
-                  avatar {
-                    url
-                  }
-                }
-              }
-            }
-            `;
-    
-            const postResult = await graphQLClient.request(postQuery);
-            const postResponse:any = await postResult;
-    
-            const postsData = postResponse.blogs || [];
             
+            const postResult = await graphQlClientWithSerializer.request(getBlogPosts);
+            const postResponse:any = await postResult;
+
+            const postsData = postResponse.blogs || [];
             setPosts(postsData);
             setPostLoading(false)
     

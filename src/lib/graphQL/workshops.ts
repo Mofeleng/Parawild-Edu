@@ -22,3 +22,42 @@ export const getCurrentWorkshop = gql`
     }
     }
 `;
+
+export const getWorkshops = gql`
+    query Workshops {
+        workshops(where: {active: true}) {
+        title
+        slug
+        id
+        active
+        forVets
+        preview
+        coverPhoto {
+                url
+            }
+        }
+    }
+`;
+
+export const getBlogPosts = gql`
+    query Posts() {
+        blogs(first: 4) {
+        id
+        title
+        slug
+        featured
+        published
+        preview
+        categories {
+            category
+        }
+        author {
+            name
+            avatar {
+                url
+            }
+        }
+        }
+    }
+    `;
+    
