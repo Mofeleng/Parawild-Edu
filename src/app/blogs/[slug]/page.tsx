@@ -1,59 +1,25 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Head from "next/head";
-import { GraphQLClient, gql } from "graphql-request";
-import useDateConvertToString from "@/lib/hooks/useDateConvertToString";
 import PageLoader from "@/components/page-loader";
 import FetchError from "@/components/fetch-error";
 import Link from "next/link";
 import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import { getCurrentPost } from "@/lib/graphQL/blogs";
 import { Card, CardContent } from "@/components/ui/card";
-
-interface Category {
-  category: string;
-}
-
-interface Content {
-  html: string;
-}
-
-interface Author {
-  name: string;
-  bio: string;
-  avatar: {
-    url: string;
-  };
-}
-
-interface BlogData {
-  title: string;
-  published: string;
-  preview: string;
-  categories: Category[];
-  id: string;
-  content: Content;
-  author: Author;
-}
-
-interface GraphQLResponse {
-  blog: BlogData;
-}
+import convertDateToString from "@/lib/actions/convertDateToString";
 
 const BlogReader = () => {
   const { slug } = useParams();
   const [blog, setBlog] = useState<GraphQLResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [success, setSuccess] = useState<boolean>(false);
+  /*const [success, setSuccess] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);*/
 
   // Endpoints and API token from environment variables
-  const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT!;
-  const ENDPOINT_SECOND = process.env.NEXT_PUBLIC_API_KEY_GRAPHCMS_SECOND_ENDPOINT!;
-  const GRAPH_CMS_TOKEN = process.env.NEXT_PUBLIC_GRAPHCMS_API_TOKEN!;
+  //const ENDPOINT_SECOND = process.env.NEXT_PUBLIC_API_KEY_GRAPHCMS_SECOND_ENDPOINT!;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,8 +47,6 @@ const BlogReader = () => {
   if (!blog || !blog.blog) {
     return <FetchError error="Blog not found"/>
   }
-
-
   const { title, published, categories, content, author } = blog.blog;
 
   return (
@@ -98,7 +62,7 @@ const BlogReader = () => {
       </div>
       <h1 className="text-4xl font-extrabold leading-tight mb-3">{title}</h1>
       <div className="text-sm text-muted-foreground">
-        By <span className="font-medium">{author.name}</span> • {useDateConvertToString(published, true)}
+        By <span className="font-medium">{author.name}</span> • {convertDateToString(published, true)}
       </div>
     </div>
 

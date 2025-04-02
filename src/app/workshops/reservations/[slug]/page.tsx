@@ -29,11 +29,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import useDateConvertToString from "@/lib/hooks/useDateConvertToString";
 import { cn } from "@/lib/utils";
 import FetchError from "@/components/fetch-error";
 import PageLoader from "@/components/page-loader";
+import convertDateToString from "@/lib/actions/convertDateToString";
 
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 
@@ -138,10 +137,10 @@ const Registration = () => {
   }, [slug]);
 
   // Helper to convert dates using your custom hook
-  const startDate = workshop ? useDateConvertToString(workshop.dates[0], false) : "";
-  const endDate = workshop ? useDateConvertToString(workshop.dates[1], false) : "";
-  const startDate_2 = workshop ? useDateConvertToString(workshop.dates[2], false) : "";
-  const endDate_2 = workshop ? useDateConvertToString(workshop.dates[3], false) : "";
+  const startDate = workshop ? convertDateToString(workshop.dates[0], false) : "";
+  const endDate = workshop ? convertDateToString(workshop.dates[1], false) : "";
+  const startDate_2 = workshop ? convertDateToString(workshop.dates[2], false) : "";
+  const endDate_2 = workshop ? convertDateToString(workshop.dates[3], false) : "";
 
   // onSubmit function for form submission
   const onSubmit = async (data: RegistrationFormValues) => {

@@ -1,9 +1,9 @@
 import Image from "next/image"
-import { Button, buttonVariants } from "./ui/button"
+import { buttonVariants } from "./ui/button"
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import useDateConvertToString from "@/lib/hooks/useDateConvertToString";
 import { headingFont } from "@/lib/constants/fonts";
+import convertDateToString from "@/lib/actions/convertDateToString";
 
 export default function BlogPreview({ post }: { post: any}) {
     const { categories } = post;
@@ -34,7 +34,7 @@ export default function BlogPreview({ post }: { post: any}) {
               </p>
               <div className="mt-auto">
                 <p className={cn(headingFont.className,"uppercase text-sm text-secondary-accent text-end mt-4")}>
-                  By { post.author.name } on { useDateConvertToString(post.published, true)}
+                  By { post.author.name } on { convertDateToString(post.published, true)}
                 </p>
                 <Link
                   href={`/blogs/${post.slug}`}

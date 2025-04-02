@@ -22,3 +22,34 @@ interface BlogPost {
 interface BlogResponse {
     blogs: BlogPost[];
 }
+
+interface Category {
+    category: string;
+  }
+  
+  interface Content {
+    html: string;
+  }
+  
+  interface Author {
+    name: string;
+    bio: string;
+    avatar: {
+      url: string;
+    };
+  }
+  
+  interface BlogData {
+    title: string;
+    published: string;
+    preview: string;
+    categories: Category[];
+    id: string;
+    content: Content;
+    author: Author;
+  }
+  
+  interface GraphQLResponse {
+    blog: BlogData;
+  }
+  

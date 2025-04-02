@@ -7,12 +7,12 @@ import Image from "next/image";
 import { headingFont } from "@/lib/constants/fonts";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import useDateConvertToString from "@/lib/hooks/useDateConvertToString";
 import FetchError from "@/components/fetch-error";
 import PageLoader from "@/components/page-loader";
 import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import Link from "next/link";
 import { getCurrentWorkshop } from "@/lib/graphQL/workshops";
+import convertDateToString from "@/lib/actions/convertDateToString";
 
 export default function WorkshopView() {
     const { slug } = useParams();
@@ -63,10 +63,10 @@ export default function WorkshopView() {
       }
 
     //converting dates to string dates 
-    const startDate = useDateConvertToString(workshop.dates[0], false);//formatDate(workshop.dates[0]);
-    const endDate = useDateConvertToString(workshop.dates[1], false); //formatDate(workshop.dates[1]);
-    const startDate_2 = useDateConvertToString(workshop.dates[2], false);
-    const endDate_2 = useDateConvertToString(workshop.dates[3], false);
+    const startDate = convertDateToString(workshop.dates[0], false);//formatDate(workshop.dates[0]);
+    const endDate = convertDateToString(workshop.dates[1], false); //formatDate(workshop.dates[1]);
+    const startDate_2 = convertDateToString(workshop.dates[2], false);
+    const endDate_2 = convertDateToString(workshop.dates[3], false);
 
     return (
         <div className="min-h-screen bg-primary-accent">
