@@ -9,7 +9,7 @@ export async function POST(req:Request) {
 
         const { name, email } = await req.json()
 
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
             from: 'newslettersubscriptions@parawild.org',
             to: devEmail,
             subject: `New newsletter subscription from ${name}`,
@@ -25,7 +25,11 @@ export async function POST(req:Request) {
             return NextResponse.json({ error: `Something went wrong ${error.message}`}, { status: 400})
         }
         return NextResponse.json({ message: "Success" }, { status: 200 })
-    } catch (error:any) {
-        return NextResponse.json({ error: `Something went wrong ${error.message}`}, { status: 400})
+    } catch (error:unknown) {
+        if (error instanceof Error) {
+            console.log(`Error: ${error.message}`);
+            return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        return NextResponse.json({ error: "Something went wrong" }, { status: 400 });
     }
 }
