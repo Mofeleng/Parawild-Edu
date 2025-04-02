@@ -17,8 +17,11 @@ export async function POST(req: Request) {
           if (error) throw new Error(error.message)
           return NextResponse.json({ message: data}, { status: 200})
 
-    } catch (error:any) {
-        console.log(`Error: ${error.message}`)
-        return NextResponse.json({ error: "Something went wrong"}, { status: 400 })
+    } catch (error:unknown) {
+        if (error instanceof Error) {
+            console.log(`Error: ${error.message}`);
+            return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        return NextResponse.json({ error: "Something went wrong" }, { status: 400 });
     }
 }
