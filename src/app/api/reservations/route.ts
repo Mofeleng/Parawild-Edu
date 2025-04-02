@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
         const resend = new Resend(process.env.RESEND_API_KEY_MARKUS);
 
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
             from: 'noreply@parawild.org',
             to: to,
             subject: subject,
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: `Something went wrong ${error.message}`}, { status: 400})
         }
 
-        const { data:mod_data, error:mod_error } = await resend.emails.send({
+        const { error:mod_error } = await resend.emails.send({
             from: 'reservations@parawild.org',
             to: devEmail,
             subject: `New ticket sale for workshop [${workshop_title}]`,
@@ -49,7 +49,11 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ message: "Success"}, { status: 200 })
 
-    } catch (error:any) {
-        return NextResponse.json({error: `Something went wrong ${error.message}`}, { status: 400})
+    } catch (error:unknown) {
+        if (error instanceof Error) {
+            console.log(`Error: ${error.message}`);
+            return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        return NextResponse.json({ error: "Something went wrong" }, { status: 400 });
     }
 }
