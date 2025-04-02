@@ -72,13 +72,13 @@ export default function WorkshopView() {
         <div className="min-h-screen bg-primary-accent">
             {/* Hero Section */}
             <div className="relative h-[80vh] w-full">
-                <Image
-                    src={workshop.coverPhoto.url}
-                    alt="Workshop cover image"
-                    fill
-                    className="object-cover"
-                    priority
-                />
+            <Image
+                src={workshop.coverPhoto.url}
+                alt="Workshop cover image"
+                fill
+                className="object-cover object-[center_10%]"
+                priority
+            />
                 <div className="absolute inset-0 bg-black/40" />
             </div>
 

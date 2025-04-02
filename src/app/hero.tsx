@@ -1,7 +1,8 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { headingFont } from "@/lib/constants/fonts";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function HeroSection() {
     return (
@@ -25,15 +26,12 @@ export default function HeroSection() {
             <p className="text-lg md:text-xl text-white/90 mb-8">
               Providing professional wildlife management and educational services in Hoedspruit and surrounding areas.
             </p>
-            <Button
-              variant="secondary"
-              size="lg"
-              aria-label="Learn More"
-              tabIndex={0}
-              className="hover:bg-secondary-accent transition-colors"
-            >
-              Learn More
-            </Button>
+            <Link href='/workshops' className={cn(buttonVariants({
+                variant: 'secondary',
+                size: 'lg'
+              }), "uppercase")}>
+                See Workshops
+            </Link>
           </div>
         </div>
       </div>

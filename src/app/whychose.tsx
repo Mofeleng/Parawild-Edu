@@ -1,7 +1,8 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { headingFont } from "@/lib/constants/fonts";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function WhyChoseUsSection() {
     return (
@@ -30,13 +31,7 @@ export default function WhyChoseUsSection() {
                 Lecture include Animal Handling, Pharmacology, History of Capture Methodology, Capture
                 Techniques, Husbandry, Relocation, Application Devises (Helicopter Exercise) and much more...
               </p>
-              <Button 
-                variant="secondary"
-                size="lg"
-                className="hover:bg-secondary-accent transition-colors mt-4 uppercase"
-              >
-                See Workshops
-              </Button>
+              
             </div>
             <div className="relative h-[500px] rounded-2xl overflow-hidden">
               <Image
@@ -67,14 +62,7 @@ export default function WhyChoseUsSection() {
                 including the beauty of the landscapes, history, cultural traditions, 
                 the excitement of capturing wild animals and fulfilling your desire to contribute to Wildlife Conservation.
               </p>
-              
-              <Button 
-                variant="secondary"
-                size="lg"
-                className="hover:bg-secondary-accent transition-colors mt-4"
-              >
-                SEE WORKSHOPS
-              </Button>
+
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -88,13 +76,12 @@ export default function WhyChoseUsSection() {
                 Do you need continual education credits in your summer holidays or are you just wild at heart? 
                 Parawild will introduce you to some of the worlds' wildest places and animals…
                 </p>
-                <Button 
-                  variant="secondary"
-                  size="lg"
-                  className="hover:bg-secondary-accent transition-colors mt-4 uppercase"
-                >
-                  Learn More
-                </Button>
+                <Link href='/blogs' className={cn(buttonVariants({
+                variant: 'secondary',
+                size: 'lg'
+              }), "uppercase")}>
+                Learn more
+              </Link>
               </div>
               <div className="relative h-[500px] rounded-2xl overflow-hidden">
                 <Image
