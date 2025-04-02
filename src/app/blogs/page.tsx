@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import PageLoader from "@/components/page-loader";
@@ -13,14 +12,12 @@ import { headingFont } from "@/lib/constants/fonts";
 import { getBlogPosts } from "@/lib/graphQL/blogs";
 
 export default function Blog() {
-    const [data, setData] = useState<any>([]);
+    const [data, setData] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [fetchError, setFetchError] = useState<null|string>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const blogsPerPage:number = 10;
     const featuredPostsToShow:number = 2;
-
-    const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,14 +26,9 @@ export default function Blog() {
               first: blogsPerPage,
               skip: (currentPage - 1) * blogsPerPage
             };
-            const result = await graphQlClientWithSerializer.request(getBlogPosts, variables);
-            const response:any = await result;
-            setData(response.posts);
-            console.log(response)
-    
+            const result:BlogResponse = await graphQlClientWithSerializer.request(getBlogPosts, variables);
             // Sort the data by publication date in descending order
-            setData(response.blogs.sort((a:any, b:any) => new Date(b.published).getTime() - new Date(a.published).getTime()));
-    
+            setData(result.blogs.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime()));
             setLoading(false);
           } catch (err) {
             setFetchError('Error fetching blog posts' + ` ${err}`);
@@ -45,16 +37,6 @@ export default function Blog() {
         };
         fetchData();
       }, [currentPage]);
-    
-      const handlePrevPage = () => {
-        setCurrentPage((prevPage) => Math.max(1, prevPage - 1));
-      };
-    
-      const handleNextPage = () => {
-        if (data.length > blogsPerPage) {
-          setCurrentPage((prevPage) => prevPage + 1);
-        }
-      };
 
       if ( loading) {
         return <PageLoader />
@@ -64,7 +46,7 @@ export default function Blog() {
         return <FetchError error={fetchError} />
       }
     
-      const featuredPosts:any = data.filter((post:any) => post.featured).slice(0, featuredPostsToShow);
+      const featuredPosts:BlogPost[] = data.filter((post) => post.featured).slice(0, featuredPostsToShow);
       const hasMore = data.length === blogsPerPage;
     return (
     <>
@@ -85,7 +67,7 @@ export default function Blog() {
           </h2>
           <hr className="border-white/20 mb-8" />
           <div className="grid md:grid-cols-2 gap-8 text-left">
-            {featuredPosts.map((featuredPost:any) => {
+            {featuredPosts.map((featuredPost) => {
                 return <BlogCardPreview key={featuredPost.id} post={featuredPost} />;
             })}
           </div>
@@ -97,7 +79,7 @@ export default function Blog() {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-white mb-8">Latest Posts</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {data.map((post:any) => {
+            {data.map((post) => {
                 return <BlogPreview post={post} key={post.id} />;
             })}
         </div>
