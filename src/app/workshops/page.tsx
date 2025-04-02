@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { GraphQLClient, gql } from "graphql-request";
 import PageLoader from "@/components/page-loader";
 import FetchError from "@/components/fetch-error";
 import { headingFont } from "@/lib/constants/fonts";
@@ -9,44 +8,41 @@ import { cn } from "@/lib/utils";
 import WorkshopPreviewCard from "@/components/vet-card-preview";
 import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import { getWorkshops } from "@/lib/graphQL/workshops";
-import { getBlogPosts } from "@/lib/graphQL/workshops";
+import { Workshop } from "@/lib/interfaces/workshops";
+//import { getBlogPosts } from "@/lib/graphQL/workshops";
 
 export default function Workshops() {
-    const [ workshops, setWorkshops ] = useState<any>([]);
+    const [ workshops, setWorkshops ] = useState<Workshop[]>([]);
     const [ loading, setLoading ] = useState<boolean>(true);
     const [ error, setError ] = useState<null|string>(null);
     
-    const [posts, setPosts] = useState<any>([]);
+    /*const [posts, setPosts] = useState<any>([]);
     const [postLoading, setPostLoading] = useState<boolean>(true);
-    const [postError, setPostError] = useState<null|string>(null);
+    const [postError, setPostError] = useState<null|string>(null);*/
 
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const result = await graphQlClientWithSerializer.request(getWorkshops);
-            const response:any = await result;
-      
-            const workshopData = response.workshops || [];
-            setWorkshops(workshopData);
-            setLoading(false);
-    
-            
-            const postResult = await graphQlClientWithSerializer.request(getBlogPosts);
+            const result = await graphQlClientWithSerializer.request<{ workshops: Workshop[] }>(getWorkshops);
+            setWorkshops(result.workshops);
+            /*const postResult = await graphQlClientWithSerializer.request(getBlogPosts);
             const postResponse:any = await postResult;
 
             const postsData = postResponse.blogs || [];
             setPosts(postsData);
-            setPostLoading(false)
+            setPostLoading(false)*/
     
           } catch (error) {
             setError("Error Loading Workshops");
             setLoading(false);
-          }
+          }finally {
+            setLoading(false);
+        }
         }
         fetchData();
       }, [])
 
-      if (loading || postLoading) {
+      if (loading /*|| postLoading*/) {
         return (
           <PageLoader />
       )
@@ -70,8 +66,8 @@ export default function Workshops() {
       }
     
       //separate vet workshops and non vet workshops
-      const vetWorkshops = workshops.filter((i:any) => (i.forVets));
-      const nonVetWorkshops = workshops.filter((i:any) => (!i.forVets));
+      const vetWorkshops = workshops.filter((workshop) => (workshop.forVets));
+      const nonVetWorkshops = workshops.filter((workshop:any) => (!workshop.forVets));
     
 
     return (
@@ -86,7 +82,7 @@ export default function Workshops() {
 
                 <h3 className={cn(headingFont.className, "text-sm uppercase text-secondary-accent text-center mx-auto mb-8")}>For veterinary students</h3>
                 <div className="grid md:grid-cols-2 gap-8">
-                    { vetWorkshops.map((workshop:any) => (
+                    { vetWorkshops.map((workshop) => (
                         <WorkshopPreviewCard key={workshop.id} workshop={workshop}/>
                     ))}
                     { vetWorkshops.length === 0 && (
@@ -98,7 +94,7 @@ export default function Workshops() {
 
                 <h3 className={cn(headingFont.className, "text-sm uppercase text-secondary-accent text-center mx-auto mb-8")}>For non-veterinary students</h3>
                 <div className="grid md:grid-cols-2 gap-8">
-                    { nonVetWorkshops.map((workshop:any) => (
+                    { nonVetWorkshops.map((workshop) => (
                         <WorkshopPreviewCard key={workshop.id} workshop={workshop} />
                     ))}
                     { nonVetWorkshops.length === 0 && (
