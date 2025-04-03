@@ -10,6 +10,7 @@ import BlogPreview from "@/components/blog-preview";
 import { cn } from "@/lib/utils";
 import { headingFont } from "@/lib/constants/fonts";
 import { getBlogPosts } from "@/lib/graphQL/blogs";
+import { BlogPost, BlogResponse } from "@/lib/interfaces/blogs";
 
 export default function Blog() {
     const [data, setData] = useState<BlogPost[]>([]);
