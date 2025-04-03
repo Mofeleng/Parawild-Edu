@@ -31,7 +31,7 @@ export default function TermsAndConditions() {
                 <strong>Travel Arrangements:</strong> Participants are responsible for booking their own flight tickets to South Africa, ensuring that their arrival aligns with the specified time on the workshop ticket. ParaWild is not responsible for any travel arrangements, including flights, accommodations, or transportation, aside from the workshop itself.
               </p>
               <p>
-                <strong>Participant Requirements:</strong> Participants must ensure they meet any visa, passport, health, or other entry requirements for traveling to South Africa. It is the participant's responsibility to obtain any necessary travel documents.
+                <strong>Participant Requirements:</strong> Participants must ensure they meet any visa, passport, health, or other entry requirements for traveling to South Africa. It is the participant&apos;s responsibility to obtain any necessary travel documents.
               </p>
               <p>
                 <strong>No Refund Policy:</strong> All workshop ticket purchases are non-refundable. Once purchased, tickets cannot be refunded or exchanged for any reason, including but not limited to personal circumstances, travel restrictions, or changes in plans.

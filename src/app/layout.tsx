@@ -15,17 +15,6 @@ export const metadata: Metadata = {
   description: "Wildlife management company in Hoedspruit",
 };
 
-const initialOptions:{
-  "client-id":string,
-  currency:string,
-  intent:string
-} = {
-  "client-id": "AfYloYKEGpTeoYFaxHZDA86Fji61QCzB3wJ51AXU8Up_m5cJSpL56sMU-XS_VHK0nVbzXEd81w-VQP0D",
-  currency: "USD",
-  intent: "capture"
-
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{

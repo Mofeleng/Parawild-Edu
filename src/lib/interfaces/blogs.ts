@@ -1,4 +1,4 @@
-interface BlogPost {
+export interface BlogPost {
     id: string;
     title: string;
     slug: string;
@@ -19,37 +19,36 @@ interface BlogPost {
     };
 }
 
-interface BlogResponse {
+export interface BlogResponse {
     blogs: BlogPost[];
 }
 
-interface Category {
+export interface Category {
     category: string;
   }
   
-  interface Content {
-    html: string;
-  }
+export interface Content {
+html: string;
+}
   
-  interface Author {
+export interface Author {
     name: string;
     bio: string;
     avatar: {
-      url: string;
+    url: string;
     };
-  }
+}
   
-  interface BlogData {
-    title: string;
-    published: string;
-    preview: string;
-    categories: Category[];
-    id: string;
-    content: Content;
-    author: Author;
-  }
-  
-  interface GraphQLResponse {
-    blog: BlogData;
-  }
-  
+export interface BlogData {
+title: string;
+published: string;
+preview: string;
+categories: Category[];
+id: string;
+content: Content;
+author: Author;
+}
+
+export interface CurrentBlogResponse {
+blog: BlogData;
+}

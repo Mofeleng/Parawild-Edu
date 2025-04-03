@@ -3,15 +3,9 @@
 import { headingFont } from "@/lib/constants/fonts";
 import { cn } from "@/lib/utils";
 
-
-
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card"
 import ContactForm from "@/components/contact-form";
 

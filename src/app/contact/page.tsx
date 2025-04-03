@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import ContactForm from '@/components/contact-form';
-
-import { GraphQLClient, gql } from 'graphql-request';
 import { graphQLClient } from '@/lib/constants/graph-ql';
 import FetchError from '@/components/fetch-error';
 import PageLoader from '@/components/page-loader';
@@ -11,18 +9,17 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getContactPage } from '@/lib/graphQL/nav-footer';
-
-const ENDPOINT = process.env.NEXT_PUBLIC_GRAPHCMS_MAIN_ENDPOINT as string;
+import { ContactPage, GetContactPageResponse } from '@/lib/interfaces/nav-footer';
 
 export default function Contact() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ContactPage>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     
     const fetchContactInfo = async () => {
       try {
-        const result:any = await graphQLClient.request(getContactPage);
+        const result = await graphQLClient.request<GetContactPageResponse>(getContactPage);
         setData(result.contactPages[0]);
       } catch (error) {
         console.error('Error fetching contact data:', error);

@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from "next/navigation";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { CalendarDays, MapPin, Info } from "lucide-react";
 import Image from "next/image";
 import { headingFont } from "@/lib/constants/fonts";

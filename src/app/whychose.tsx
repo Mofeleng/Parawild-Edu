@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { headingFont } from "@/lib/constants/fonts";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -74,7 +74,7 @@ export default function WhyChoseUsSection() {
                 <p className="text-white/90 text-md">
                 This is an opportunity to see live – in action – wild animal relocation in their natural habitat. 
                 Do you need continual education credits in your summer holidays or are you just wild at heart? 
-                Parawild will introduce you to some of the worlds' wildest places and animals…
+                Parawild will introduce you to some of the worlds&apos; wildest places and animals…
                 </p>
                 <Link href='/blogs' className={cn(buttonVariants({
                 variant: 'secondary',

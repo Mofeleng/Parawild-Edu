@@ -8,16 +8,17 @@ import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql"
 import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
 import { getTestimonials } from "@/lib/graphQL/homepage"
+import { GetTestimonialsResponse, Testimonial } from "@/lib/interfaces/homepage"
 
 export default function TestimonialsSection() {
-  const [testimonials, setTestimonials] = useState<any[]>([])
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [error, setError] = useState<boolean | string>(false)
   const [loadingTestimonials, setLoadingTestimonials] = useState<boolean>(true)
 
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const result: any = await graphQlClientWithSerializer.request(getTestimonials)
+        const result = await graphQlClientWithSerializer.request<GetTestimonialsResponse>(getTestimonials)
         const response = result.testimonials || null
 
         if (!response) {
@@ -25,7 +26,10 @@ export default function TestimonialsSection() {
         } else {
           setTestimonials(response)
         }
-      } catch (err) {
+      } catch (err:unknown) {
+        if (err instanceof Error) {
+          setError(`Something went worng ${err.message}`)
+        }
         setError("Error fetching testimonials")
       } finally {
         setLoadingTestimonials(false)
@@ -87,7 +91,7 @@ export default function TestimonialsSection() {
           containerClass="carousel-container"
           itemClass="px-4"
         >
-          {testimonials.map((testimonial: any) => (
+          {testimonials.map((testimonial) => (
             <div key={testimonial.id} className="w-full">
               <TestimonialCard
                 name={testimonial.name}

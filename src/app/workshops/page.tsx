@@ -32,7 +32,12 @@ export default function Workshops() {
             setPosts(postsData);
             setPostLoading(false)*/
     
-          } catch (error) {
+          } catch (error:unknown) {
+            if ( error instanceof Error ) {
+              setError( `Error loading workshops: ${error.message}`);
+              setLoading(false)
+              return;
+            }
             setError("Error Loading Workshops");
             setLoading(false);
           }finally {
@@ -67,7 +72,7 @@ export default function Workshops() {
     
       //separate vet workshops and non vet workshops
       const vetWorkshops = workshops.filter((workshop) => (workshop.forVets));
-      const nonVetWorkshops = workshops.filter((workshop:any) => (!workshop.forVets));
+      const nonVetWorkshops = workshops.filter((workshop) => (!workshop.forVets));
     
 
     return (
