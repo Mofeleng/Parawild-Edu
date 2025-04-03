@@ -55,7 +55,7 @@ const registrationSchema = z
     yearOfStudy: z.string().optional(),
     dateSelected: z.string().min(1, "Please select a date"),
     applicationMotivation: z.string().optional(),
-    knowledgeApplication: z.string().optional(),
+    //knowledgeApplication: z.string().optional(),
     attendedWorkshops: z.boolean(),
     attendedWorkshopContext: z.string().optional(),
     specificExpectedSkills: z.string().optional(),
@@ -158,7 +158,7 @@ const [toPayFor, setToPayFor] = useState<CurrentWorkshop|null>(null);
       firstName, lastName, email, phoneNumber, degree, institution,
       yearOfStudy, attendedWorkshops, attendedWorkshopContext, specificExpectedSkills,
       emergencyName, emergencyEmail, emergencyRelationship, explainedHealthRequirements,
-      healthRequirements, dateSelected, applicationMotivation, knowledgeApplication
+      healthRequirements, dateSelected, applicationMotivation /*, knowledgeApplication*/
      } = data
 
     try {
@@ -174,14 +174,14 @@ const [toPayFor, setToPayFor] = useState<CurrentWorkshop|null>(null);
               wid: workshop.id || '',
               w: workshop.title || '',
               appm: applicationMotivation || '',
-              kapp: knowledgeApplication || '',
-              attw: attendedWorkshops || '',
+              //kapp: knowledgeApplication || '',
+              attw: attendedWorkshops.toString() || '',
               attwc: attendedWorkshopContext || '',
               ssk: specificExpectedSkills || '',
               en: emergencyName || '',
               eea: emergencyEmail || '',
               er: emergencyRelationship || '',
-              hr: healthRequirements || '',
+              hr: healthRequirements.toString() || 'false',
               hre: explainedHealthRequirements || '',
               paid: "false",
               ds: dateSelected || ''
@@ -478,7 +478,7 @@ const [toPayFor, setToPayFor] = useState<CurrentWorkshop|null>(null);
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/*<FormField
                     control={form.control}
                     name="knowledgeApplication"
                     render={({ field }) => (
@@ -492,7 +492,7 @@ const [toPayFor, setToPayFor] = useState<CurrentWorkshop|null>(null);
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */ }
                 </div>
 
                 {/* Previous Experience */}
@@ -546,7 +546,7 @@ const [toPayFor, setToPayFor] = useState<CurrentWorkshop|null>(null);
                       </FormItem>
                     )}
                   />
-                </div>
+                </div> 
 
                 {/* Expected Skills */}
                 <div className="space-y-2">
@@ -691,7 +691,7 @@ const [toPayFor, setToPayFor] = useState<CurrentWorkshop|null>(null);
                     </Link>
                   </FormLabel>
                 </div>
-                <div className="text-red">{ error }</div>
+                <div className="text-red-500">{ error }</div>
                 <FormMessage
                   className="!ml-10"
                   // This FormMessage could also be rendered inside the FormField if needed.
