@@ -13,10 +13,11 @@ import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import Link from "next/link";
 import { getCurrentWorkshop } from "@/lib/graphQL/workshops";
 import convertDateToString from "@/lib/actions/convertDateToString";
+import { CurrentWorkshop, GetCurrentWorkshopResponse } from "@/lib/interfaces/workshops";
 
 export default function WorkshopView() {
     const { slug } = useParams();
-    const [ workshop, setWorkshop ] = useState<any>([]);
+    const [ workshop, setWorkshop ] = useState<CurrentWorkshop>();
     const [ loading, setLoading ] = useState<boolean>(true);
     const [ error, setError ] = useState<null|string>(null);
     
@@ -26,14 +27,18 @@ export default function WorkshopView() {
                 const variables = {
                     slug: slug,
                 }
-                const result = await graphQlClientWithSerializer.request(getCurrentWorkshop, variables);
-                const response:any = await result;
-                const workshopData = response.workshop || [];
+                const result = await graphQlClientWithSerializer.request<GetCurrentWorkshopResponse>(getCurrentWorkshop, variables);
+                //const response = await result;
+                //const workshopData = response.workshop || [];
 
-                setWorkshop(workshopData);
+                setWorkshop(result.workshop);
                 setLoading(false);
-            } catch (error:any) {
-                setError(error.message);
+            } catch (error:unknown) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError(`Something went wrong`)
+                }
                 setLoading(false);
             }
         }
@@ -45,7 +50,7 @@ export default function WorkshopView() {
           <PageLoader />
       )
       }
-      if (!workshop || workshop.length === 0) {
+      if (!workshop) {
         return (
           <div>
             <section className="section">
@@ -73,7 +78,7 @@ export default function WorkshopView() {
             {/* Hero Section */}
             <div className="relative h-[80vh] w-full">
             <Image
-                src={workshop.coverPhoto.url}
+                src={workshop.coverPhoto ? workshop.coverPhoto.url: ''}
                 alt="Workshop cover image"
                 fill
                 className="object-cover object-[center_10%]"

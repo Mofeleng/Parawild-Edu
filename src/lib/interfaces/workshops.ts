@@ -14,11 +14,15 @@ export interface Workshop {
 // Define the structure of the current workshop details
 export interface CurrentWorkshop extends Workshop {
     dates: string;
-    attending: boolean;
-    secondWorkshopAttending: boolean;
+    attending: number;
+    secondWorkshopAttending: number;
     reservationFee: number;
     address: string;
     about: {
         html: string;
     };
+}
+
+export interface GetCurrentWorkshopResponse {
+    workshop: CurrentWorkshop
 }
