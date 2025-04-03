@@ -1,4 +1,4 @@
-const convertDateToString = (dateString:any, isShort:boolean) => {
+const convertDateToString = (dateString:string, isShort:boolean) => {
     let options: Intl.DateTimeFormatOptions;
     if (!isShort) {
          options = { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };

@@ -34,11 +34,15 @@ import PageLoader from "@/components/page-loader";
 import convertDateToString from "@/lib/actions/convertDateToString";
 
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
-
+import { CreateOrderActions, CreateOrderData } from "@paypal/paypal-js"
+import { OnApproveActions, OnApproveData } from "@paypal/paypal-js";
 //grqphql
 import { graphQLClient, graphQLClientWorkshopManagement, graphQLClientWorkshopWithAuth } from "@/lib/constants/graph-ql";
 import { createAttendeeMutation, getCurrentWorkshop, publishWorkshopMutation, updateAttendeeMutation, updateWorkshopMutation } from "@/lib/graphQL/reservations";
 
+//interfaces
+import { CurrentWorkshop, GetCurrentWorkshopResponse } from "@/lib/interfaces/workshops";
+import { Attendee, CreateAttendeeResponse } from "@/lib/interfaces/reservations";
 // Define the form schema with Zod (including some cross-field validations)
 const registrationSchema = z
   .object({
@@ -95,14 +99,14 @@ const Registration = () => {
   const { slug } = params;
 
   // Local state for workshop info and submission
-  const [workshop, setWorkshop] = useState<any>(null);
-  const [toPayFor, setToPayFor] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [workshop, setWorkshop] = useState<CurrentWorkshop|null>(null);
+const [toPayFor, setToPayFor] = useState<CurrentWorkshop|null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string|null>(null);
   const [counterDate, setCounterDate] = useState<number>(0);
   const [ showPayPalButtons, setShowPayPalButtons ] = useState<boolean>(false)
-  const [ attendee, setAttendee ] = useState<any>(null)
-  const [ error, setError ] = useState<any>(null)
+  const [ attendee, setAttendee ] = useState<Attendee|null>()
+  const [ error, setError ] = useState<string|null>(null)
 
   // Initialize react-hook-form with shadcn Form integration
   const form = useForm<RegistrationFormValues>({
@@ -119,7 +123,7 @@ const Registration = () => {
     const fetchWorkshop = async () => {
       try {
         const variables = { slug };
-        const result: any = await graphQLClient.request(getCurrentWorkshop, variables);
+        const result = await graphQLClient.request<GetCurrentWorkshopResponse>(getCurrentWorkshop, variables);
         if (result.workshop) {
           setWorkshop(result.workshop);
           setToPayFor(result.workshop);
@@ -127,6 +131,9 @@ const Registration = () => {
           setFetchError("Workshop not found. Please go back home.");
         }
       } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message)
+        }
         setFetchError("Something went wrong while fetching data.");
       } finally {
         setLoading(false);
@@ -134,6 +141,10 @@ const Registration = () => {
     };
     fetchWorkshop();
   }, [slug]);
+
+  if (loading) return <PageLoader />;
+  if (fetchError) return <FetchError error={fetchError} />;
+  if (!workshop || !toPayFor) return <FetchError error="Workshop data not available. Please try again." />;  
 
   // Helper to convert dates using your custom hook
   const startDate = workshop ? convertDateToString(workshop.dates[0], false) : "";
@@ -176,9 +187,8 @@ const Registration = () => {
               ds: dateSelected || ''
             };
     
-        const result = await graphQLClientWorkshopWithAuth.request(createAttendeeMutation, variables);
-        const response:any = await result;
-        const workshopAttendee = response.createAttendee || null;
+        const response:CreateAttendeeResponse = await graphQLClientWorkshopWithAuth.request<CreateAttendeeResponse>(createAttendeeMutation, variables);
+        const workshopAttendee = response.createAttendee;
         
         if (workshopAttendee) {
             setError(null);
@@ -186,38 +196,45 @@ const Registration = () => {
             setAttendee(workshopAttendee);
             console.log(`Successfully created an attendee for workshop: ${workshop.title}, `, attendee)
         } else {
-          console.log("Something went wrong")
-           setError("Failed to upload information, please refresh and retry");
+          console.log("No attendee data returned");
+          setError("Failed to upload information, please refresh and retry");
         }
 
-    } catch (error) {
-      //Output an error
+    } catch (error:unknown) {
+      if (error instanceof Error) {
+        console.log("No attendee data returned", error.message);
+        setError("Failed to upload information, please refresh and retry");
+      }
     }
   };
 
-  const onCreateOrder = async (data:any, actions:any):Promise<any> => {
+  const onCreateOrder = async (_data: CreateOrderData, actions:CreateOrderActions):Promise<string> => {
     return actions.order.create({
       purchase_units: [
           {
               amount: {
-                  value: workshop.reservationFee!
+                  value: workshop.reservationFee.toString()
               },
           },
       ],
     });
   }
 
-  const onApprove = async (data:any, actions:any):Promise<any> => {
-    return actions.order.capture().then( async (details:any) => {
-      
+  const onApprove = async (_data:OnApproveData, actions:OnApproveActions):Promise<void> => {
+    if (!actions.order) {
+      console.error("PayPal order actions are missing");
+      alert("Payment processing error. Please try again.");
+      return;
+    }
+    return actions.order.capture().then( async () => { //Removed the details argument
       try {
         //1. Update paymemt status
         const variables = {
-          id: attendee.id,
+          id: attendee!.id,
         }
 
-        const result:any = await graphQLClientWorkshopWithAuth.request(updateAttendeeMutation, variables);
-        const response = await result ;
+        /*const result:any = */await graphQLClientWorkshopWithAuth.request(updateAttendeeMutation, variables);
+        //const response = await result ;
 
         //2. Decrease the amount of spots left in the workshop
         let workshop_date_1:number;
@@ -242,8 +259,8 @@ const Registration = () => {
           secondWorkshopAttending: workshop_date_2
         }
 
-        const res_workshop = await graphQLClientWorkshopManagement.request(updateWorkshopMutation, workshop_vars);
-        const resp_workshop = await res_workshop;
+        /*const res_workshop = */await graphQLClientWorkshopManagement.request(updateWorkshopMutation, workshop_vars);
+        //const resp_workshop = await res_workshop;
 
         const update_id_var = {
           id: workshop.id
@@ -254,7 +271,7 @@ const Registration = () => {
         console.log("Updated workshop: ", resp_publish);
 
         //Send an email:
-        const email_data = { to: attendee.email, subject: `Successfully bought ticket for workshop: ${workshop.title}`, html: `Congratulations ${attendee.firstName} you have successfully reserved your spot for the workshop: ${workshop.title}. Please keep an eye on your emails, one of our representitives will be in touch with you.`, customer_name: attendee.firstName, workshop_title: workshop.title, workshop_date: attendee.dateAttending, email: attendee.email, address: workshop.address }
+        const email_data = { to: attendee!.email, subject: `Successfully bought ticket for workshop: ${workshop.title}`, html: `Congratulations ${attendee!.firstName} you have successfully reserved your spot for the workshop: ${workshop.title}. Please keep an eye on your emails, one of our representitives will be in touch with you.`, customer_name: attendee!.firstName, workshop_title: workshop.title, workshop_date: attendee!.dateAttending, email: attendee!.email, address: workshop.address }
         const email_request = await fetch('/api/reservations', {
           headers: {
             "Content-Type": "application/json"
@@ -264,22 +281,23 @@ const Registration = () => {
         })
 
         if (!email_request.ok) {
-          const errData = await response.json();
+          const errData = await email_request.json();
           console.log("Error", errData);
         } else {
-          const data = await email_request.json()
+          //const data = await email_request.json() // this wasnt being used
           router.push('/success') //on success
         }
-      } catch (error:any) {
+      } catch (error:unknown) {
+        if (error instanceof Error) {
+          setError(`Error occured, ${error.message}`)
+        }
         alert("Something went wrong. Please try again.")
         //router.refresh() //monitor this
       }
     })
   }
 
-  if (loading) return <PageLoader />;
-  if (fetchError) return <FetchError error={fetchError} />;
-
+  
   return (
     <section className="py-24 px-8">
       <div className="container mx-auto">
@@ -398,7 +416,7 @@ const Registration = () => {
                   <FormField
                     control={form.control}
                     name="dateSelected"
-                    render={({ field }) => (
+                    render={() => ( //removed unused field
                       <FormItem>
                         <FormLabel>When would you like to attend?</FormLabel>
                         <FormControl>
@@ -673,6 +691,7 @@ const Registration = () => {
                     </Link>
                   </FormLabel>
                 </div>
+                <div className="text-red">{ error }</div>
                 <FormMessage
                   className="!ml-10"
                   // This FormMessage could also be rendered inside the FormField if needed.
