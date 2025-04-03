@@ -25,20 +25,3 @@ export interface Attendee {
 export interface CreateAttendeeResponse {
 createAttendee: Attendee;
 }
-
-interface UpdateAttendeeVariables {
-    id?: string;
-    paid: boolean;
-  }
-  
-  interface UpdateWorkshopVariables {
-    id?: string;
-    attending: number;
-    secondWorkshopAttending: number;
-  }
-  
-  interface PublishWorkshopVariables {
-    id?: string;
-    to: string; // GraphQL requires an explicit publication state
-  }
-  
