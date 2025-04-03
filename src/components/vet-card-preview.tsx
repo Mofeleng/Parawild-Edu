@@ -4,21 +4,15 @@ import { cn } from "@/lib/utils";
 import { headingFont } from "@/lib/constants/fonts";
 import Image from "next/image";
 import Link from "next/link";
+import { Workshop } from "@/lib/interfaces/workshops";
 
-interface WorkshopPreviewCardProps {
-    title?: string;
-    description?: string;
-    imageUrl?: string;
-    href?: string;
-}
-
-export default function WorkshopPreviewCard({workshop}: {workshop:any}) {
+export default function WorkshopPreviewCard({workshop}: {workshop:Workshop}) {
     return (
         <Card className="overflow-hidden border-0 bg-white/5 text-white hover:bg-white/10 transition-all">
             <CardHeader className="p-0">
                 <div className="relative aspect-video w-full overflow-hidden">
                     <Image
-                        src={workshop.coverPhoto.url}
+                        src={workshop.coverPhoto ? workshop.coverPhoto.url : ''}
                         alt="Workshop cover image"
                         fill
                         className="object-cover p-4 object-top"

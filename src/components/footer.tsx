@@ -4,24 +4,24 @@
 import Link from "next/link"
 import NewsletterForm from "./newsletter-form"
 import { useEffect, useState } from "react";
-import { gql } from "graphql-request";
 import { graphQlClientWithSerializer } from "@/lib/constants/graph-ql";
 import PageLoader from "./page-loader";
 import FetchError from "./fetch-error";
 import { getContactPage } from "@/lib/graphQL/nav-footer";
+import { ContactPage, GetContactPageResponse } from '@/lib/interfaces/nav-footer';
 
 export default function Footer() {
-  const [ res, setRes ] = useState<any>([]);
+  const [ res, setRes ] = useState<ContactPage[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => 
     {
       const fetchContactInfo = async () => {
         try {
-          const result = await graphQlClientWithSerializer.request(getContactPage);
-          const response:any = await result;
+          const result = await graphQlClientWithSerializer.request<GetContactPageResponse>(getContactPage);
+          //const response:any = await result;
           
-          setRes(response)
+          setRes(result.contactPages)
           setLoading(false)
         } catch (error) {
           console.log("Something went wrong: ", error)
@@ -36,7 +36,7 @@ export default function Footer() {
         <PageLoader />
     )
     }
-    if (!res.contactPages) {
+    if (!res) {
       return (
           <FetchError error="Something went wrong while fetching the contact details" />
       )
@@ -51,11 +51,11 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold text-white mb-1">Address</h3>
             <address className="text-gray-300 not-italic">
-              <div className="listitem" dangerouslySetInnerHTML={{__html: res.contactPages[0].location.html}}></div>
+              <div className="listitem" dangerouslySetInnerHTML={{__html: res[0].location.html}}></div>
             </address>
             <h3 className="text-xl font-bold text-white mt-2 mb-1">Contact</h3>
             <div className="text-gray-300 not-italic">
-              <div className="listitem" dangerouslySetInnerHTML={{__html: res.contactPages[0].contactInformation.html}}></div>
+              <div className="listitem" dangerouslySetInnerHTML={{__html: res[0].contactInformation.html}}></div>
             </div>
           </div>
 

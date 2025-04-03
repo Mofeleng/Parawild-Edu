@@ -41,19 +41,22 @@ export default function NewsletterForm() {
                 },
                 method: "POST",
                 body: JSON.stringify(values)
-    
             })
+
+            if (!req.ok) {
+                throw new Error(`Something went wrong`)
+            }
 
             setSuccess(true)
             setLoading(false)
             setError(null)
-        } catch (error:any) {
-            console.log(`Something went wrong, ${error.message}`)
+        } catch (error:unknown) {
+            if (error instanceof Error) {
+                console.log(`Something went wrong, ${error.message}`)
+            }
             setError('Something went wrong.')
         }
-        
       }
-
       const handleFormReset = () => {
         form.reset()
         setSuccess(false)
