@@ -1,14 +1,15 @@
 import { headingFont } from "@/lib/constants/fonts";
+import { BlogPost } from "@/lib/interfaces/blogs";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export default function BlogCardPreview({ post }:{ post: any}) {
+export default function BlogCardPreview({ post }:{ post: BlogPost}) {
     const { categories } = post;
     return (
         <Link href={`/blogs/${post.slug}`} >
             <article className="bg-white/5 p-6 rounded-lg h-full flex flex-col">
                 <div className="text-sm text-gray-300 mb-2">
-                { categories.map((i:any) => {
+                { categories.map((i) => {
                     return i.category + " ";
                 })}
                 </div>

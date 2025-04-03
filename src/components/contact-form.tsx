@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,7 +22,7 @@ import FormErrorMessage from "./form-error"
 
 export default function ContactForm () {
     const [ success, setSuccess ] = useState<boolean>(false)
-  const [ error, setError ] = useState<any>(null)
+  const [ error, setError ] = useState<string|null>(null)
   const [ loading, setLoading ] = useState<boolean>(false)
 
   const form = useForm<z.infer<typeof contactFormSchema>>({
@@ -52,11 +51,17 @@ export default function ContactForm () {
         body: JSON.stringify(values)
       })
 
-      const res = await req.json()
+      if (!req.ok) {
+        throw new Error(`Server error: Could not send response`)
+      }
       setSuccess(true)
       setLoading(false)
-    } catch (error:any) {
-      setError(`Something went wrong ${error.message}`)
+      
+    } catch (error:unknown) {
+      if (error instanceof Error) {
+        setError(`Something went wrong ${error.message}`)
+      }
+      setError('Something went wrong')
       setLoading(false)
     }
   }

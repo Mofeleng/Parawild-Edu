@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { headingFont } from "@/lib/constants/fonts";
 import convertDateToString from "@/lib/actions/convertDateToString";
+import { BlogPost } from "@/lib/interfaces/blogs";
 
-export default function BlogPreview({ post }: { post: any}) {
+export default function BlogPreview({ post }: { post: BlogPost}) {
     const { categories } = post;
 
     return (
@@ -20,7 +21,7 @@ export default function BlogPreview({ post }: { post: any}) {
             </div>
             <div className="p-6 flex flex-col flex-grow">
               <div className="text-sm text-gray-300 mb-2">
-              { categories.map((category:any) => {
+              { categories.map((category) => {
                 return (
                 category.category + " "
                 )
