@@ -89,9 +89,9 @@ export default function WorkshopView() {
 
             {/* Content Section */}
             <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main Content */}
-                    <div className="lg:col-span-2">
+                    <div className="order-2 lg:order-1 lg:col-span-2">
                         <h1 className={cn(
                             headingFont.className,
                             "text-4xl md:text-5xl font-bold text-secondary mb-8"
@@ -143,7 +143,7 @@ export default function WorkshopView() {
                     </div>
 
                     {/* Sidebar */}
-                    <div className="lg:col-span-1">
+                    <div className="order-1 lg:order-2 lg:col-span-1">
                         <div className="sticky top-5 bg-white/5 rounded-lg p-6 backdrop-blur-sm">
                             <div className="text-center mb-6">
                                 <p className="text-4xl font-bold text-white">${workshop.reservationFee}</p>
