@@ -44,7 +44,7 @@ export default function WhyChoseUsSection() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="relative h-[500px] rounded-2xl overflow-hidden">
+            <div className="order-2 md:order-1 relative h-[500px] rounded-2xl overflow-hidden">
                 <Image
                   src="/image-2.jpg"
                   alt="Experience all that South Africa has to offer"
@@ -52,18 +52,18 @@ export default function WhyChoseUsSection() {
                   className="object-cover"
                 />
               </div>
-              <div className="space-y-6">
-              <div className="space-y-2">
-                <h3 className={cn(headingFont.className, "text-sm uppercase text-secondary-accent")}>Experience</h3>
-                <h4 className={cn(headingFont.className, "text-3xl text-white font-bold")}>Experience all that South Africa offers</h4>
+              <div className="space-y-6 order-1 md:order-2">
+                <div className="space-y-2">
+                  <h3 className={cn(headingFont.className, "text-sm uppercase text-secondary-accent")}>Experience</h3>
+                  <h4 className={cn(headingFont.className, "text-3xl text-white font-bold")}>Experience all that South Africa offers</h4>
+                </div>
+                <p className="text-white/90 text-md">
+                  Parawild will give you the opportunity to experience all that South Africa has to offer, 
+                  including the beauty of the landscapes, history, cultural traditions, 
+                  the excitement of capturing wild animals and fulfilling your desire to contribute to Wildlife Conservation.
+                </p>
               </div>
-              <p className="text-white/90 text-md">
-                Parawild will give you the opportunity to experience all that South Africa has to offer, 
-                including the beauty of the landscapes, history, cultural traditions, 
-                the excitement of capturing wild animals and fulfilling your desire to contribute to Wildlife Conservation.
-              </p>
 
-            </div>
           </div>
           <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
